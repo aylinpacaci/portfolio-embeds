@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AIDA — Aid Data Ecosystem Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#F5F4F0;font-family:'Inter',system-ui,sans-serif;color:#2C2C2A}
+body{display:flex;flex-direction:column}
+
+/* ── TOP BAR ── */
+.bar{
+  min-height:52px;flex-shrink:0;
+  background:#fff;
+  border-bottom:1px solid #E8E6DF;
+  display:flex;align-items:center;flex-wrap:wrap;
+  padding:8px 16px;gap:0;row-gap:6px;
+  z-index:10;
+}
+.brand{display:flex;align-items:center;gap:10px;flex-shrink:0;margin-right:16px}
+.logo{
+  width:26px;height:26px;background:#3B6CD3;border-radius:5px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Prompt',sans-serif;font-weight:600;font-size:11px;color:#fff;
+  letter-spacing:-0.3px
+}
+.brand-name{font-family:'Prompt',sans-serif;font-weight:600;font-size:14px;color:#2C2C2A}
+.sep{width:1px;height:16px;background:#E8E6DF;margin:0 14px}
+.brand-tag{font-size:11.5px;color:#888780}
+
+.legend{display:flex;align-items:center;gap:14px;flex:1;flex-wrap:wrap;row-gap:4px;min-width:0}
+.li{display:flex;align-items:center;gap:6px;font-size:11px;color:#5F5E5A;white-space:nowrap}
+.ll{width:20px;height:1.5px;border-radius:1px}
+.ll.dash{background:none!important;border-top:1.5px dashed}
+
+@media (max-width:900px){
+  .brand-tag,.sep{display:none}
+}
+
+.actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.btn{
+  font-family:'Inter',sans-serif;font-size:11px;font-weight:500;
+  padding:6px 13px;border-radius:6px;
+  border:1px solid #E8E6DF;background:#fff;color:#5F5E5A;
+  cursor:pointer;transition:all .15s;white-space:nowrap
+}
+.btn:hover{border-color:#3B6CD3;color:#3B6CD3}
+.btn.on{background:#3B6CD3;border-color:#3B6CD3;color:#fff}
+
+/* ── MAP ── */
+.map{flex:1;position:relative;overflow:hidden;min-height:0}
+#svg{display:block;width:100%;height:100%}
+
+/* ── PANEL ── */
+.panel{
+  position:absolute;right:0;top:0;bottom:0;width:272px;
+  background:#fff;border-left:1px solid #E8E6DF;
+  transform:translateX(100%);
+  transition:transform .22s cubic-bezier(.4,0,.2,1);
+  z-index:20;display:flex;flex-direction:column;overflow-y:auto
+}
+.panel.open{transform:translateX(0)}
+.ph{padding:20px 20px 16px;border-bottom:1px solid #F0EEE8;flex-shrink:0;position:relative}
+.pcls{
+  position:absolute;top:14px;right:14px;width:22px;height:22px;
+  border:1px solid #E8E6DF;border-radius:50%;background:#fff;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:14px;color:#888780;transition:all .15s
+}
+.pcls:hover{background:#F5F4F0;color:#2C2C2A}
+.pzone{font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.pname{font-family:'Prompt',sans-serif;font-weight:600;font-size:17px;line-height:1.2;color:#2C2C2A;margin-bottom:1px}
+.psub{font-size:10.5px;color:#888780}
+.pb{padding:16px 20px}
+.pdesc{font-size:12px;line-height:1.7;color:#5F5E5A;margin-bottom:14px}
+.psect{font-size:9px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:#B4B2A9;margin-bottom:6px}
+.pflows{display:flex;flex-direction:column;gap:5px}
+.pf{display:flex;align-items:flex-start;gap:8px;font-size:11px;color:#5F5E5A;padding:5px 8px;border-radius:5px;background:#F5F4F0;line-height:1.4}
+.fd{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:3px}
+
+/* ── TOOLTIP ── */
+.tt{
+  position:absolute;pointer-events:none;
+  background:#fff;border:1px solid #E8E6DF;border-radius:5px;
+  padding:4px 9px;font-size:10.5px;color:#5F5E5A;
+  box-shadow:0 2px 6px rgba(0,0,0,.06);
+  opacity:0;transition:opacity .1s;z-index:30;white-space:nowrap
+}
+.tt.show{opacity:1}
+
+/* ── SVG flow animations ── */
+@keyframes flow{to{stroke-dashoffset:-22}}
+@keyframes flowaida{to{stroke-dashoffset:-18}}
+@keyframes flowslow{to{stroke-dashoffset:-28}}
+.fa{animation:flow 1.8s linear infinite}
+.fa2{animation:flowaida 1.2s linear infinite}
+.fa3{animation:flowslow 2.4s linear infinite}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="brand">
+    <div class="logo">A</div>
+    <span class="brand-name">AIDA</span>
+  </div>
+  <div class="sep"></div>
+  <span class="brand-tag" style="margin-right:24px">Aid Data Ecosystem Map</span>
+
+  <div class="legend">
+    <div class="li"><div class="ll" style="background:#1D9E75"></div>Publish data</div>
+    <div class="li"><div class="ll" style="background:#3B6CD3"></div>IATI infrastructure</div>
+    <div class="li"><div class="ll" style="background:#3B6CD3;height:3px;opacity:.5"></div>AIDA Explorer</div>
+    <div class="li"><div class="ll" style="background:#1D9E75;height:3px;opacity:.7"></div>AIDA Publisher</div>
+    <div class="li"><div class="ll" style="background:#E07C5A"></div>Insights &amp; value</div>
+    <div class="li"><div class="ll dash" style="border-color:#B4B2A9"></div>Governance</div>
+    <div class="li"><div class="ll dash" style="border-color:#D3D1C7"></div>Existing tools</div>
+  </div>
+
+  <div class="actions">
+    <button class="btn" id="btnF">Highlight AIDA flows</button>
+    <button class="btn" id="btnP">Pause flow</button>
+  </div>
+</div>
+
+<div class="map">
+  <svg id="svg" viewBox="0 0 1400 810" preserveAspectRatio="xMidYMid meet"></svg>
+
+  <div class="panel" id="panel">
+    <div class="ph">
+      <button class="pcls" id="pcls">×</button>
+      <div class="pzone" id="pzone"></div>
+      <div class="pname" id="pname"></div>
+      <div class="psub"  id="psub"></div>
+    </div>
+    <div class="pb">
+      <p class="pdesc" id="pdesc"></p>
+      <div class="psect">Flow relationships</div>
+      <div class="pflows" id="pflows"></div>
+    </div>
+  </div>
+
+  <div class="tt" id="tt"></div>
+</div>
+
+<script>
+const NS='http://www.w3.org/2000/svg';
+const svg=document.getElementById('svg');
+
+/* ═══════════════════════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════════════════════ */
+
+const ZONES=[
+  {id:'pub',   label:'Data Publishers',  x:30,  y:108, w:175, h:620, fill:'rgba(29,158,117,.05)', stroke:'rgba(29,158,117,.35)', lc:'#1D9E75'},
+  {id:'iati',  label:'IATI Ecosystem',   x:220, y:108, w:310, h:620, fill:'rgba(59,108,211,.04)', stroke:'rgba(59,108,211,.3)',  lc:'#3B6CD3'},
+  {id:'aida',  label:'AIDA Platform',    x:547, y:72,  w:210, h:666, fill:'rgba(59,108,211,.07)', stroke:'#3B6CD3',              lc:'#3B6CD3', hi:true},
+  {id:'users', label:'End Users',        x:775, y:108, w:595, h:620, fill:'rgba(95,94,90,.03)',   stroke:'rgba(95,94,90,.2)',    lc:'#888780'},
+];
+
+/* cat→style */
+const CS={
+  ctx:  {fill:'#fff',  stroke:'#D3D1C7', lc:'#5F5E5A',  sc:'#B4B2A9', zl:'Global Aid Context'},
+  pub:  {fill:'#fff',  stroke:'#1D9E75', lc:'#0F6E56',  sc:'#5F5E5A', zl:'Data Publisher'},
+  gov:  {fill:'#fff',  stroke:'#B4B2A9', lc:'#5F5E5A',  sc:'#B4B2A9', zl:'IATI Governance'},
+  infra:{fill:'#EEF4FF',stroke:'#3B6CD3',lc:'#185FA5',  sc:'#3B6CD3', zl:'IATI Infrastructure'},
+  tool: {fill:'#fff',  stroke:'#D3D1C7', lc:'#888780',  sc:'#B4B2A9', zl:'Existing Tool'},
+  aida: {fill:'#3B6CD3',stroke:'#185FA5',lc:'#fff',     sc:'rgba(255,255,255,.65)', zl:'AIDA Platform'},
+  user: {fill:'#fff',  stroke:'#D3D1C7', lc:'#2C2C2A',  sc:'#888780', zl:'End User'},
+};
+
+const NODES=[
+  /* context – small chips above publishers + IATI zones */
+  {id:'unocha',   zone:'ctx',  cx:85,  cy:52, w:112,h:34, label:'UN OCHA / HDX',    sub:'Humanitarian data',      cat:'ctx'},
+  {id:'worldbank',zone:'ctx',  cx:218, cy:52, w:118,h:34, label:'World Bank',        sub:'Open data',              cat:'ctx'},
+  {id:'oecddac',  zone:'ctx',  cx:352, cy:52, w:112,h:34, label:'OECD DAC',          sub:'CRS reporting',          cat:'ctx'},
+  {id:'donorgovs',zone:'ctx',  cx:480, cy:52, w:126,h:34, label:'Donor Governments', sub:'Bilateral aid flows',    cat:'ctx'},
+
+  /* publishers */
+  {id:'ngos',  zone:'pub', cx:117,cy:225, w:142,h:44, label:'NGOs / CSOs',     sub:'Programme data',    cat:'pub'},
+  {id:'multi', zone:'pub', cx:117,cy:315, w:142,h:44, label:'Multilaterals',   sub:'UN, MDBs, EU',      cat:'pub'},
+  {id:'rcpt',  zone:'pub', cx:117,cy:405, w:142,h:44, label:'Recipient Govts', sub:'Country systems',   cat:'pub'},
+  {id:'found', zone:'pub', cx:117,cy:495, w:142,h:44, label:'Foundations',     sub:'Private sector',    cat:'pub'},
+
+  /* IATI governance */
+  {id:'std',    zone:'iati',cx:302,cy:212, w:124,h:44, label:'IATI Standard',   sub:'XML schema & codelists',cat:'gov'},
+  {id:'govbody',zone:'iati',cx:450,cy:212, w:124,h:44, label:'Governing Body',  sub:'Members & board',       cat:'gov'},
+
+  /* IATI infrastructure */
+  {id:'registry',  zone:'iati',cx:375,cy:330, w:156,h:48, label:'IATI Registry',   sub:'Published dataset store',cat:'infra'},
+  {id:'datastore', zone:'iati',cx:375,cy:428, w:156,h:48, label:'IATI Datastore',  sub:'API query layer',        cat:'infra'},
+
+  /* existing tools */
+  {id:'dportal',  zone:'iati',cx:265,cy:545, w:98,h:38,  label:'D-Portal',   sub:'Browse IATI',  cat:'tool'},
+  {id:'oipa',     zone:'iati',cx:377,cy:545, w:80,h:38,  label:'OIPA',       sub:'API wrapper',  cat:'tool'},
+  {id:'aidstream',zone:'iati',cx:477,cy:545, w:106,h:38, label:'Aidstream',  sub:'Publish only', cat:'tool'},
+
+  /* AIDA – centre node */
+  {id:'aida',zone:'aida',cx:652,cy:405, w:176,h:84, label:'AIDA', sub:'Explorer + Publisher', cat:'aida', isAida:true},
+
+  /* end users – 2 cols × 3 rows */
+  {id:'analysts',  zone:'users',cx:888, cy:238, w:154,h:44, label:'Analysts & Researchers',sub:'Data-driven decisions',  cat:'user'},
+  {id:'policy',    zone:'users',cx:1128,cy:238, w:154,h:44, label:'Policy Makers',         sub:'Strategic oversight',    cat:'user'},
+  {id:'ngocoord',  zone:'users',cx:888, cy:378, w:154,h:44, label:'NGO Coordinators',      sub:'Programme management',   cat:'user'},
+  {id:'journalists',zone:'users',cx:1128,cy:378,w:154,h:44, label:'Journalists',           sub:'Aid accountability',     cat:'user'},
+  {id:'donors',    zone:'users',cx:888, cy:518, w:154,h:44, label:'Donors',                sub:'Funding decisions',      cat:'user'},
+  {id:'meteams',   zone:'users',cx:1128,cy:518, w:154,h:44, label:'M&E / Programme Staff', sub:'Impact tracking',       cat:'user'},
+];
+
+/* Edge type styles */
+const ES={
+  publish:    {stroke:'#1D9E75',w:1.4,dash:[],     anim:'fa',  aida:false, label:'Publishes IATI data'},
+  govern:     {stroke:'#B4B2A9',w:0.8,dash:[5,4],  anim:'',    aida:false, label:'Governs / structures'},
+  infra:      {stroke:'#3B6CD3',w:1.4,dash:[],     anim:'fa',  aida:false, label:'Indexes & serves data'},
+  tool_acc:   {stroke:'#D3D1C7',w:0.8,dash:[3,4],  anim:'',    aida:false, label:'Tool queries data'},
+  aida_expl:  {stroke:'#3B6CD3',w:2.2,dash:[],     anim:'fa2', aida:true,  label:'AIDA Explorer: live IATI data'},
+  aida_pub:   {stroke:'#1D9E75',w:2.0,dash:[],     anim:'fa',  aida:true,  label:'AIDA Publisher: submit to Registry'},
+  aida_out:   {stroke:'#E07C5A',w:1.6,dash:[],     anim:'fa3', aida:true,  label:'AIDA delivers insights & value'},
+};
+
+/* All points are manually verified to avoid node overlap */
+const EDGES=[
+  /* publishers → registry */
+  {id:'e-ngos', from:'ngos',  to:'registry', type:'publish',
+   pts:{f:[188,237],t:[297,334],c1:[226,237],c2:[218,334]}},
+  {id:'e-mul',  from:'multi', to:'registry', type:'publish',
+   pts:{f:[188,315],t:[297,330],c1:[230,315],c2:[240,330]}},
+  {id:'e-rcpt', from:'rcpt',  to:'registry', type:'publish',
+   pts:{f:[188,395],t:[297,338],c1:[230,395],c2:[240,360]}},
+  {id:'e-fnd',  from:'found', to:'registry', type:'publish',
+   pts:{f:[188,485],t:[297,348],c1:[230,485],c2:[240,400]}},
+
+  /* governance */
+  {id:'e-gb-std',  from:'govbody', to:'std', type:'govern',
+   pts:{f:[388,212],t:[364,212],c1:[380,212],c2:[372,212]}},
+  {id:'e-std-reg', from:'std', to:'registry', type:'govern',
+   pts:{f:[302,234],t:[340,306],c1:[302,268],c2:[322,284]}},
+
+  /* IATI infrastructure */
+  {id:'e-reg-ds',  from:'registry',  to:'datastore', type:'infra',
+   pts:{f:[375,354],t:[375,404],c1:[375,374],c2:[375,384]}},
+  {id:'e-ds-dp',   from:'datastore', to:'dportal',   type:'tool_acc',
+   pts:{f:[354,452],t:[265,526],c1:[354,484],c2:[265,500]}},
+  {id:'e-ds-oipa', from:'datastore', to:'oipa',      type:'tool_acc',
+   pts:{f:[375,452],t:[377,526],c1:[375,476],c2:[377,500]}},
+
+  /* Aidstream → Registry (arc around right of Datastore) */
+  {id:'e-aids-reg',from:'aidstream', to:'registry', type:'publish',
+   pts:{f:[477,526],t:[453,354],c1:[520,470],c2:[492,318]}},
+
+  /* AIDA Explorer ← Datastore */
+  {id:'e-ds-aida', from:'datastore', to:'aida', type:'aida_expl',
+   pts:{f:[453,416],t:[564,400],c1:[500,416],c2:[535,400]}},
+
+  /* AIDA Publisher → Registry (arc up and left) */
+  {id:'e-aida-reg',from:'aida', to:'registry', type:'aida_pub',
+   pts:{f:[564,378],t:[453,316],c1:[516,252],c2:[482,258]}},
+
+  /* AIDA → end users */
+  {id:'e-aida-ana',  from:'aida',to:'analysts',   type:'aida_out',
+   pts:{f:[740,378],t:[811,238],c1:[776,378],c2:[776,238]}},
+  {id:'e-aida-pol',  from:'aida',to:'policy',     type:'aida_out',
+   pts:{f:[740,385],t:[1051,238],c1:[896,385],c2:[896,238]}},
+  {id:'e-aida-ngo',  from:'aida',to:'ngocoord',   type:'aida_out',
+   pts:{f:[740,405],t:[811,378],c1:[778,405],c2:[778,378]}},
+  {id:'e-aida-jou',  from:'aida',to:'journalists',type:'aida_out',
+   pts:{f:[740,412],t:[1051,378],c1:[896,412],c2:[896,378]}},
+  {id:'e-aida-don',  from:'aida',to:'donors',     type:'aida_out',
+   pts:{f:[740,422],t:[811,518],c1:[776,422],c2:[776,518]}},
+  {id:'e-aida-me',   from:'aida',to:'meteams',    type:'aida_out',
+   pts:{f:[740,428],t:[1051,518],c1:[896,428],c2:[896,518]}},
+];
+
+/* ═══════════════════════════════════════════════════════════
+   DETAIL DATA
+═══════════════════════════════════════════════════════════ */
+const DD={
+  unocha:{desc:'The UN Office for the Coordination of Humanitarian Affairs and its Humanitarian Data Exchange (HDX). A major presence in the open development data landscape, HDX complements IATI data and operates in the same global transparency ecosystem.',
+   flows:[{c:'#D3D1C7',l:'Publishes humanitarian datasets to open platforms'}]},
+  worldbank:{desc:'The World Bank Open Data portal provides development indicators, project data and financial flows. Operates alongside IATI in the global open-data ecosystem and is frequently used in combination with IATI data by researchers and policy makers.',
+   flows:[{c:'#D3D1C7',l:'Complementary development data for analysis'}]},
+  oecddac:{desc:'The OECD Development Assistance Committee publishes CRS (Creditor Reporting System) statistics on bilateral and multilateral aid. A key reference dataset for policy makers, often used alongside IATI to understand donor country flows.',
+   flows:[{c:'#D3D1C7',l:'Publishes CRS donor reporting data'}]},
+  donorgovs:{desc:'Bilateral donor governments — FCDO, USAID, GIZ, SIDA and others — who fund international development, mandate IATI publishing, and shape the global aid transparency agenda. Many are also members of the IATI Governing Body.',
+   flows:[{c:'#D3D1C7',l:'Mandate IATI transparency requirements'},{c:'#B4B2A9',l:'Shape Governing Body strategy'}]},
+  ngos:{desc:'NGOs and civil society organisations are the most numerous IATI publishers. They implement programmes across sectors — health, WASH, education, humanitarian response — and are required to report activity, budget and results data. AIDA Publisher is specifically designed to reduce their publication burden.',
+   flows:[{c:'#1D9E75',l:'Publish activity data to IATI Registry'},{c:'#1D9E75',l:'Upload data via AIDA Publisher workflow'}]},
+  multi:{desc:'Multilateral development organisations including UN agencies (UNDP, UNICEF, WFP), multilateral development banks (World Bank, ADB) and the European Union. Large-volume IATI publishers with complex organisational structures. Key Explorer users for sector coordination and gap analysis.',
+   flows:[{c:'#1D9E75',l:'Publish high-volume programme data to IATI'}]},
+  rcpt:{desc:'Recipient country governments that track and manage incoming aid through national systems. Their publication adds the country-side perspective — showing how external aid flows align with national budgets and development plans.',
+   flows:[{c:'#1D9E75',l:'Publish country-level aid flow data'}]},
+  found:{desc:'Private foundations and philanthropic organisations — including the Bill & Melinda Gates Foundation and Wellcome Trust — increasingly aligning with IATI to publish development finance and grant portfolio data.',
+   flows:[{c:'#1D9E75',l:'Publish development finance and grant data'}]},
+  std:{desc:'The IATI Standard defines the open data format: XML schemas, codelists (sectors, aid types, countries, regions) and reporting rules. All IATI-compliant data must validate against the Standard. AIDA Publisher automatically validates uploaded data against the current version before allowing submission.',
+   flows:[{c:'#B4B2A9',l:'Structures IATI Registry schema'},{c:'#B4B2A9',l:'Defines what valid IATI data looks like'}]},
+  govbody:{desc:'The IATI Governing Body comprises member organisations — including donor governments, multilaterals and civil society — plus an elected board. It stewards the evolution of the Standard, sets strategy, and ensures the ecosystem serves stakeholder needs. Decisions by the Governing Body directly shape the rules all IATI publishers follow.',
+   flows:[{c:'#B4B2A9',l:'Governs the IATI Standard and ecosystem strategy'}]},
+  registry:{desc:'The central repository where all IATI-compliant XML datasets are stored. Every IATI publisher deposits their data here. AIDA Publisher\'s final step connects directly to the Registry API — users authenticate once with their Publisher ID and API Token, then submit through AIDA without touching the Registry directly.',
+   flows:[{c:'#1D9E75',l:'Receives data files from all publishers'},{c:'#1D9E75',l:'Receives validated submissions from AIDA Publisher'},{c:'#3B6CD3',l:'Feeds the IATI Datastore with indexed data'}]},
+  datastore:{desc:'The official IATI API query layer. It indexes all Registry datasets and exposes them as a REST API. AIDA Explorer reads live from the Datastore — all dashboards, filters and visualisations show current IATI data. D-Portal, OIPA and other tools also rely on the Datastore as their primary data source.',
+   flows:[{c:'#3B6CD3',l:'Indexes all IATI Registry data'},{c:'#3B6CD3',l:'Serves live data to AIDA Explorer'},{c:'#D3D1C7',l:'Serves API queries to D-Portal, OIPA, researchers'}]},
+  dportal:{desc:'The existing IATI data browser. Allows users to search and filter IATI activities by country, sector and organisation. Explore-only — no publishing workflow. Requires more data literacy than AIDA Explorer and offers less guided discovery. An important predecessor that AIDA significantly builds upon.',
+   flows:[{c:'#D3D1C7',l:'Queries IATI Datastore for browsing'}]},
+  oipa:{desc:'A REST API wrapper over the IATI Datastore, primarily for developers and technical researchers. Powerful for programmatic access to IATI data but inaccessible to non-specialist staff. AIDA Explorer makes the same underlying data available without any API knowledge.',
+   flows:[{c:'#D3D1C7',l:'Provides developer API access to IATI data'}]},
+  aidstream:{desc:'An existing IATI publishing tool for NGOs. Handles IATI data creation and submission to the Registry. Publish-only — no analytics, no partner discovery, no data exploration. AIDA Publisher offers a comparable publishing workflow plus visualisation, the Explorer, and both modes on one platform.',
+   flows:[{c:'#1D9E75',l:'Publishes IATI data files to Registry'}]},
+  aida:{desc:'AIDA bridges the IATI infrastructure and the humans who need to use it. Explorer provides interactive dashboards, filters, bookmarks and charts from live IATI data — no technical expertise required. Publisher provides a guided 3-step workflow (upload → validate → publish) that abstracts IATI XML compliance. AIDA is the only platform in the ecosystem that does both.',
+   flows:[{c:'#3B6CD3',l:'Explorer: queries live IATI Datastore'},{c:'#1D9E75',l:'Publisher: receives uploads from organisations'},{c:'#1D9E75',l:'Publisher: submits validated data to IATI Registry'},{c:'#E07C5A',l:'Delivers insights, dashboards and tools to all user types'}]},
+  analysts:{desc:'Data analysts, M&E specialists and researchers — like Daniel Wong (disaster response researcher, Southeast Asia) and Leila Haddad (UNDP gender equality analyst, Middle East). Use AIDA Explorer to track funding trends, filter by sector or marker, export charts for reports, and avoid hours of manual data cleaning.',
+   flows:[{c:'#E07C5A',l:'Explore and filter IATI data via dashboards'},{c:'#E07C5A',l:'Export visualisations and filtered datasets'}]},
+  policy:{desc:'Donor country policy makers and senior government officials — like Thomas Müller (donor country policy maker). Need high-level sector and country comparisons, executive-friendly summaries, and clear visual storytelling to justify aid portfolio decisions without technical overhead.',
+   flows:[{c:'#E07C5A',l:'Access sector dashboards and strategic summaries'}]},
+  ngocoord:{desc:'NGO programme coordinators who both publish their organisation\'s data AND explore the wider IATI landscape — like Amina Diallo (WASH, Sub-Saharan Africa) and Dr. Maria Alvarez (public health, Latin America). Dual-mode users: publish via AIDA Publisher, find partners via AIDA Explorer.',
+   flows:[{c:'#1D9E75',l:'Publish data via AIDA Publisher workflow'},{c:'#E07C5A',l:'Explore partner and sector data via Explorer'}]},
+  journalists:{desc:'Investigative journalists and media organisations using AIDA Explorer to research aid spending, track funding to specific regions, verify NGO claims and find accountability stories in the data — without needing specialist data skills.',
+   flows:[{c:'#E07C5A',l:'Search and explore aid flows for reporting'}]},
+  donors:{desc:'Private donors and institutional funders who explore aid portfolios to identify underfunded areas, evaluate implementing organisations\' track records, and make evidence-backed funding and partnership decisions.',
+   flows:[{c:'#E07C5A',l:'Evaluate and compare aid portfolios via AIDA'}]},
+  meteams:{desc:'Monitoring, evaluation and programme staff who track indicator targets vs actuals, compare cross-donor outcomes, and use AIDA to surface results data — without needing to query raw IATI XML, download datasets or clean them manually.',
+   flows:[{c:'#E07C5A',l:'Track programme results and indicators via AIDA'}]},
+};
+
+/* ═══════════════════════════════════════════════════════════
+   SVG UTILS
+═══════════════════════════════════════════════════════════ */
+function el(tag,attrs,parent){
+  const e=document.createElementNS(NS,tag);
+  if(attrs) for(const[k,v]of Object.entries(attrs)) e.setAttribute(k,v);
+  if(parent) parent.appendChild(e);
+  return e;
+}
+function txt(str,attrs,parent){
+  const t=el('text',attrs,parent);
+  t.textContent=str; return t;
+}
+function rr(x,y,w,h,r,attrs,parent){
+  return el('rect',{x,y,width:w,height:h,rx:r,...(attrs||{})},parent);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RENDER
+═══════════════════════════════════════════════════════════ */
+function render(){
+  svg.innerHTML='';
+
+  /* ── defs: arrow markers ── */
+  const defs=el('defs',{},svg);
+  const MC={
+    publish:'#1D9E75',govern:'#B4B2A9',infra:'#3B6CD3',
+    tool_acc:'#D3D1C7',aida_expl:'#3B6CD3',aida_pub:'#1D9E75',aida_out:'#E07C5A'
+  };
+  Object.entries(MC).forEach(([k,c])=>{
+    const m=el('marker',{id:'m-'+k,viewBox:'0 0 10 10',refX:'8',refY:'5',
+      markerWidth:'5',markerHeight:'5',orient:'auto-start-reverse'},defs);
+    el('path',{d:'M2 1L8 5L2 9',fill:'none',stroke:c,'stroke-width':'1.5',
+      'stroke-linecap':'round','stroke-linejoin':'round'},m);
+  });
+
+  /* ── background ── */
+  rr(0,0,1400,810,0,{fill:'#F5F4F0'},svg);
+
+  /* ── subtle grid ── */
+  const grid=el('g',{'stroke':'rgba(0,0,0,0.04)','stroke-width':'0.5'},svg);
+  for(let gx=60;gx<1400;gx+=60) el('line',{x1:gx,y1:0,x2:gx,y2:810},grid);
+  for(let gy=60;gy<810;gy+=60)  el('line',{x1:0,y1:gy,x2:1400,y2:gy},grid);
+
+  /* ── zones ── */
+  ZONES.forEach(z=>{
+    const g=el('g',{},svg);
+    rr(z.x,z.y,z.w,z.h,10,{fill:z.fill,stroke:z.stroke,
+      'stroke-width':z.hi?1:0.5,
+      'stroke-dasharray':z.hi?'none':'5 4'},g);
+    if(z.hi){
+      rr(z.x+1,z.y+1,z.w-2,z.h-2,9,{fill:'none',
+        stroke:'rgba(59,108,211,.12)','stroke-width':'0.5'},g);
+    }
+    txt(z.label.toUpperCase(),{
+      x:z.x+12,y:z.y+18,fill:z.lc,
+      'font-family':"'Prompt',sans-serif",'font-size':'11',
+      'font-weight':'600','letter-spacing':'0.08em'
+    },g);
+  });
+
+  /* ── IATI zone sub-labels & dividers ── */
+  const iatiAnnot=[
+    {y:184,label:'GOVERNANCE'},
+    {y:302,label:'INFRASTRUCTURE'},
+    {y:520,label:'COMPARABLE TOOLS'},
+  ];
+  iatiAnnot.forEach(a=>{
+    txt(a.label,{x:228,y:a.y,fill:'#888780',
+      'font-family':"'Prompt',sans-serif",'font-size':'9.5',
+      'font-weight':'500','letter-spacing':'0.09em'},svg);
+  });
+  [280,500].forEach(yd=>{
+    el('line',{x1:230,y1:yd,x2:520,y2:yd,
+      stroke:'rgba(59,108,211,.12)','stroke-width':'0.5'},svg);
+  });
+
+  /* ── global context label ── */
+  txt('GLOBAL AID CONTEXT',{x:85,y:22,fill:'#888780',
+    'font-family':"'Prompt',sans-serif",'font-size':'9.5',
+    'font-weight':'500','letter-spacing':'0.1em'},svg);
+
+  /* ── context chip → zone connectors (subtle dashed) ── */
+  const ctxConns=[
+    {cx:85, ty:108,tx:105},  /* UN OCHA → publishers zone */
+    {cx:218,ty:108,tx:300},  /* World Bank → IATI zone */
+    {cx:352,ty:108,tx:375},  /* OECD → IATI zone */
+    {cx:480,ty:108,tx:450},  /* Donors → IATI zone */
+  ];
+  ctxConns.forEach(c=>{
+    el('line',{x1:c.cx,y1:69,x2:c.tx,y2:c.ty,
+      stroke:'rgba(0,0,0,0.1)','stroke-width':'0.5',
+      'stroke-dasharray':'2 3'},svg);
+  });
+
+  /* ── edges ── */
+  const edgeG=el('g',{id:'edges'},svg);
+  EDGES.forEach(e=>{
+    const s=ES[e.type];
+    const p=e.pts;
+    const d=`M${p.f[0]} ${p.f[1]} C${p.c1[0]} ${p.c1[1]},${p.c2[0]} ${p.c2[1]},${p.t[0]} ${p.t[1]}`;
+    const da=s.anim
+      ? '6 5'
+      : (s.dash.length ? s.dash.join(' ') : 'none');
+    const pe=el('path',{
+      d,fill:'none',stroke:s.stroke,'stroke-width':s.w,
+      'stroke-linecap':'round',
+      'stroke-dasharray':da,
+      'marker-end':'url(#m-'+e.type+')',
+      'data-eid':e.id,'data-aida':s.aida?'1':'0',
+    },edgeG);
+    if(s.anim) pe.classList.add(s.anim);
+  });
+
+  /* ── nodes ── */
+  NODES.forEach(n=>{
+    const s=CS[n.cat];
+    const x=n.cx-n.w/2, y=n.cy-n.h/2;
+    const g=el('g',{'data-nid':n.id,style:'cursor:pointer'},svg);
+    g.addEventListener('mouseenter',()=>onHover(n,g));
+    g.addEventListener('mouseleave',()=>onLeave());
+    g.addEventListener('click',()=>onNodeClick(n));
+
+    rr(x,y,n.w,n.h,7,{
+      fill:s.fill,stroke:s.stroke,
+      'stroke-width':n.isAida?1.5:'0.5',
+      class:'nr'
+    },g);
+
+    if(n.isAida){
+      /* AIDA: blue bg, split sub-labels */
+      rr(x,y,n.w,n.h,7,{fill:'none',stroke:'rgba(255,255,255,.15)','stroke-width':'0.5'},g);
+      el('line',{x1:n.cx,y1:y+10,x2:n.cx,y2:y+n.h-10,
+        stroke:'rgba(255,255,255,.2)','stroke-width':'0.5'},g);
+      txt('AIDA',{x:n.cx,y:n.cy-9,'text-anchor':'middle',
+        'dominant-baseline':'middle',fill:'#fff',
+        'font-family':"'Prompt',sans-serif",'font-size':'19','font-weight':'600'},g);
+      txt('Explorer',{x:n.cx-n.w/4,y:n.cy+13,'text-anchor':'middle',
+        'dominant-baseline':'middle',fill:'rgba(255,255,255,.8)',
+        'font-family':"'Inter',sans-serif",'font-size':'11'},g);
+      txt('Publisher',{x:n.cx+n.w/4,y:n.cy+13,'text-anchor':'middle',
+        'dominant-baseline':'middle',fill:'rgba(255,255,255,.8)',
+        'font-family':"'Inter',sans-serif",'font-size':'11'},g);
+    } else {
+      const ly=n.sub ? n.cy-8 : n.cy;
+      txt(n.label,{x:n.cx,y:ly,'text-anchor':'middle',
+        'dominant-baseline':'middle',fill:s.lc,
+        'font-family':"'Prompt',sans-serif",'font-size':'12.5','font-weight':'500'},g);
+      if(n.sub) txt(n.sub,{x:n.cx,y:n.cy+9,'text-anchor':'middle',
+        'dominant-baseline':'middle',fill:s.sc,
+        'font-family':"'Inter',sans-serif",'font-size':'10.5'},g);
+    }
+
+    /* invisible hit expand */
+    rr(x-4,y-4,n.w+8,n.h+8,10,{fill:'transparent',stroke:'none'},g);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INTERACTIONS
+═══════════════════════════════════════════════════════════ */
+let selNode=null, focusOn=false, paused=false;
+const panel=document.getElementById('panel');
+const tt=document.getElementById('tt');
+
+function nodeById(id){ return NODES.find(n=>n.id===id); }
+
+function connected(nid){
+  const s=new Set([nid]);
+  EDGES.forEach(e=>{ if(e.from===nid) s.add(e.to); if(e.to===nid) s.add(e.from); });
+  return s;
+}
+
+function applyOpacity(nodeIds=null, aidaOnly=false){
+  svg.querySelectorAll('[data-nid]').forEach(g=>{
+    const nid=g.getAttribute('data-nid');
+    let vis=true;
+    if(nodeIds) vis=nodeIds.has(nid);
+    if(aidaOnly){
+      const node=nodeById(nid);
+      vis = node && (node.cat==='aida'||node.cat==='infra'||
+        EDGES.some(e=>ES[e.type].aida&&(e.from===nid||e.to===nid)));
+    }
+    g.style.opacity=vis?'1':'0.18';
+  });
+  svg.querySelectorAll('[data-eid]').forEach(path=>{
+    const eid=path.getAttribute('data-eid');
+    const edge=EDGES.find(e=>e.id===eid);
+    let vis=true;
+    if(nodeIds) vis=edge&&(nodeIds.has(edge.from)||nodeIds.has(edge.to));
+    if(aidaOnly) vis=edge&&ES[edge.type].aida;
+    path.style.opacity=vis?'1':'0.07';
+  });
+}
+
+function resetOpacity(){
+  svg.querySelectorAll('[data-nid]').forEach(g=>g.style.opacity='1');
+  svg.querySelectorAll('[data-eid]').forEach(p=>p.style.opacity='1');
+}
+
+function onHover(node,g){
+  const s=CS[node.cat];
+  g.querySelector('.nr').setAttribute('stroke-width',node.isAida?2:1);
+  // .tt is position:absolute inside .map; compute coords relative to .map
+  const svgRect=svg.getBoundingClientRect();
+  const mapRect=svg.parentElement.getBoundingClientRect();
+  const offL=svgRect.left-mapRect.left;
+  const offT=svgRect.top-mapRect.top;
+  const scx=svgRect.width/1400, scy=svgRect.height/810;
+  tt.textContent=node.label;
+  let tx=offL+(node.cx+node.w/2)*scx+10;
+  let ty=offT+node.cy*scy-14;
+  // keep tooltip inside the map horizontally
+  const ttW=tt.offsetWidth||120;
+  if(tx+ttW>mapRect.width-8) tx=offL+(node.cx-node.w/2)*scx-ttW-10;
+  tt.style.left=tx+'px';
+  tt.style.top=ty+'px';
+  tt.classList.add('show');
+}
+function onLeave(){
+  svg.querySelectorAll('.nr').forEach(r=>{
+    const g=r.parentElement;
+    const nid=g.getAttribute('data-nid');
+    const nd=nodeById(nid);
+    if(nd) r.setAttribute('stroke-width',nd.isAida?'1.5':'0.5');
+  });
+  tt.classList.remove('show');
+}
+
+function onNodeClick(node){
+  if(selNode&&selNode.id===node.id){ closePanel(); return; }
+  selNode=node;
+  const d=DD[node.id]||{desc:'',flows:[]};
+  const s=CS[node.cat];
+  document.getElementById('pzone').textContent=s.zl.toUpperCase();
+  document.getElementById('pzone').style.color=s.stroke==='#fff'?'#3B6CD3':s.stroke;
+  document.getElementById('pname').textContent=node.label;
+  document.getElementById('psub').textContent=node.sub||'';
+  document.getElementById('pdesc').textContent=d.desc;
+  const pf=document.getElementById('pflows'); pf.innerHTML='';
+  (d.flows||[]).forEach(f=>{
+    const div=document.createElement('div');
+    div.className='pf';
+    div.innerHTML=`<div class="fd" style="background:${f.c}"></div><span>${f.l}</span>`;
+    pf.appendChild(div);
+  });
+  panel.classList.add('open');
+  if(!focusOn) applyOpacity(connected(node.id));
+}
+
+function closePanel(){
+  selNode=null;
+  panel.classList.remove('open');
+  if(focusOn) applyOpacity(null,true); else resetOpacity();
+}
+
+document.getElementById('pcls').addEventListener('click',closePanel);
+svg.addEventListener('click',e=>{
+  if(!e.target.closest('[data-nid]')) closePanel();
+});
+
+/* focus button */
+document.getElementById('btnF').addEventListener('click',function(){
+  focusOn=!focusOn;
+  this.classList.toggle('on',focusOn);
+  this.textContent=focusOn?'Show all flows':'Highlight AIDA flows';
+  selNode=null; panel.classList.remove('open');
+  if(focusOn) applyOpacity(null,true); else resetOpacity();
+});
+
+/* pause button */
+document.getElementById('btnP').addEventListener('click',function(){
+  paused=!paused;
+  this.classList.toggle('on',paused);
+  this.textContent=paused?'Resume flow':'Pause flow';
+  svg.querySelectorAll('.fa,.fa2,.fa3').forEach(e=>{
+    e.style.animationPlayState=paused?'paused':'running';
+  });
+});
+
+/* mouse leave svg */
+svg.addEventListener('mouseleave',()=>tt.classList.remove('show'));
+
+/* ── INIT ── */
+render();
+</script>
+</body>
+</html>
