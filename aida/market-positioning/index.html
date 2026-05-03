@@ -98,8 +98,7 @@ body{
 
 /* ── ANIMATIONS ── */
 @keyframes nodeIn{
-  from{opacity:0;transform:scale(0) translate(var(--dx),var(--dy))}
-  60%{opacity:1;transform:scale(1.15) translate(0,0)}
+  from{opacity:0;transform:scale(.7) translate(var(--dx),var(--dy))}
   to{opacity:1;transform:scale(1) translate(0,0)}
 }
 @keyframes aidaGlow{
@@ -333,14 +332,14 @@ function render(){
 
     /* stagger delay */
     const dist=Math.sqrt(p.x*p.x+p.y*p.y);
-    const delay=(dist/130*0.8+0.3).toFixed(2);
-    const dx=((50-p.x)*2).toFixed(0);
-    const dy=((50-p.y)*-2).toFixed(0);
+    const delay=(dist/130*0.6+0.4).toFixed(2);
+    const dx=((50-p.x)*0.8).toFixed(0);
+    const dy=((50-p.y)*-0.8).toFixed(0);
 
     g.style.cssText=`
       --dx:${dx}px;--dy:${dy}px;
       transform-origin:${px}px ${py}px;
-      animation:nodeIn .6s ${delay}s cubic-bezier(.34,1.56,.64,1) both;
+      animation:nodeIn .8s ${delay}s cubic-bezier(.25,.1,.25,1) both;
     `;
 
     if(p.cat==='aida'){
@@ -523,6 +522,8 @@ function applyMode(){
     if(currentMode==='iati') vis=(p.cat==='iati'||p.cat==='aida');
     if(currentMode==='general') vis=(p.cat==='general'||p.cat==='aida');
     if(currentMode==='aida') vis=(p.cat==='aida');
+    /* clear animation fill so inline opacity takes effect */
+    g.style.animationFillMode='none';
     g.style.transition='opacity .35s cubic-bezier(.4,0,.2,1)';
     g.style.opacity=vis?'1':'0.06';
   });
@@ -530,6 +531,15 @@ function applyMode(){
 
 /* ─── INIT ─── */
 render();
+
+/* After all entrance animations complete, remove fill-mode lock
+   so that inline opacity from mode filter can take effect */
+setTimeout(()=>{
+  document.querySelectorAll('#nodes [data-pid]').forEach(g=>{
+    g.style.animationFillMode='none';
+    g.style.opacity='1';
+  });
+},2600);
 </script>
 </body>
 </html>
