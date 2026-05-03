@@ -541,5 +541,14 @@ setTimeout(()=>{
   });
 },2600);
 </script>
+  <script>
+// Tell parent frame our height so it can resize
+function postHeight(){
+  const h = document.querySelector('.card,.map-wrap').offsetHeight;
+  window.parent.postMessage({type:'resize',height:h},'*');
+}
+window.addEventListener('load', postHeight);
+new ResizeObserver(postHeight).observe(document.querySelector('.card,.map-wrap'));
+</script>
 </body>
 </html>
