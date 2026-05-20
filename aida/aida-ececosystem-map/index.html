@@ -14,47 +14,95 @@ body{
   width:100%;margin:0 auto;
   background:transparent;
   font-family:'Inter',system-ui,sans-serif;
-  color:#E8E6DF;
+  color:var(--c-body);
   overflow-x:hidden;
+}
+
+/* ── DARK THEME (default) ── */
+:root{
+  --c-body:#E8E6DF;
+  --c-bg:#1A1A1A;
+  --c-map-border:rgba(255,255,255,.06);
+  --c-title:rgba(255,255,255,.85);
+  --c-title-sub:rgba(255,255,255,.35);
+  --c-btn-border:rgba(255,255,255,.12);
+  --c-btn-text:rgba(255,255,255,.5);
+  --c-btn-hover-border:rgba(59,108,211,.6);
+  --c-btn-hover-text:rgba(255,255,255,.8);
+  --c-btn-on-bg:#3B6CD3;
+  --c-btn-on-border:#3B6CD3;
+  --c-btn-on-text:#fff;
+  --c-tt-bg:#2A2A28;
+  --c-tt-border:rgba(255,255,255,.1);
+  --c-tt-shadow:rgba(0,0,0,.4);
+  --c-tt-name:#fff;
+  --c-tt-sub:rgba(255,255,255,.4);
+  --c-tt-desc:rgba(255,255,255,.6);
+  --c-tt-flow:rgba(255,255,255,.45);
+  --c-legend-text:rgba(255,255,255,.35);
+  --c-legend-border:rgba(255,255,255,.05);
+  --c-legend-dash-gov:rgba(255,255,255,.25);
+  --c-legend-dash-tool:rgba(255,255,255,.15);
+}
+
+/* ── LIGHT THEME ── */
+[data-theme="light"]{
+  --c-body:#2C2C2A;
+  --c-bg:#F8F7F4;
+  --c-map-border:rgba(0,0,0,.07);
+  --c-title:rgba(0,0,0,.8);
+  --c-title-sub:rgba(0,0,0,.4);
+  --c-btn-border:#E8E6DF;
+  --c-btn-text:#5F5E5A;
+  --c-btn-hover-border:#3B6CD3;
+  --c-btn-hover-text:#3B6CD3;
+  --c-btn-on-bg:#3B6CD3;
+  --c-btn-on-border:#3B6CD3;
+  --c-btn-on-text:#fff;
+  --c-tt-bg:#fff;
+  --c-tt-border:#E8E6DF;
+  --c-tt-shadow:rgba(0,0,0,.1);
+  --c-tt-name:#2C2C2A;
+  --c-tt-sub:#888780;
+  --c-tt-desc:#5F5E5A;
+  --c-tt-flow:#5F5E5A;
+  --c-legend-text:#888780;
+  --c-legend-border:rgba(0,0,0,.07);
+  --c-legend-dash-gov:#B4B2A9;
+  --c-legend-dash-tool:#D3D1C7;
 }
 
 /* ── MAP CONTAINER ── */
 .map-wrap{
-  position:relative;
-  width:100%;
-  background:#1A1A1A;
-  border-radius:12px;
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,.06);
+  position:relative;width:100%;
+  background:var(--c-bg);
+  border-radius:12px;overflow:hidden;
+  border:1px solid var(--c-map-border);
+  transition:background .2s,border-color .2s;
 }
 
 /* ── HEADER ── */
-.map-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:16px 20px 0;
-}
-.map-title{
-  display:flex;align-items:center;gap:10px;
-}
+.map-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 0}
+.map-title{display:flex;align-items:center;gap:10px}
 .logo{
   width:28px;height:28px;background:#3B6CD3;border-radius:6px;
   display:flex;align-items:center;justify-content:center;
   font-family:'Prompt',sans-serif;font-weight:700;font-size:12px;color:#fff;
   letter-spacing:-0.3px;
 }
-.title-text{font-family:'Prompt',sans-serif;font-weight:600;font-size:13px;color:rgba(255,255,255,.85);letter-spacing:.02em}
-.title-sub{font-size:11px;color:rgba(255,255,255,.35);margin-left:4px}
+.title-text{font-family:'Prompt',sans-serif;font-weight:600;font-size:13px;color:var(--c-title);letter-spacing:.02em}
+.title-sub{font-size:11px;color:var(--c-title-sub);margin-left:4px}
 
 .controls{display:flex;gap:6px}
 .ctrl-btn{
   font-family:'Inter',sans-serif;font-size:10px;font-weight:500;
   padding:5px 11px;border-radius:6px;
-  border:1px solid rgba(255,255,255,.12);background:transparent;
-  color:rgba(255,255,255,.5);cursor:pointer;
+  border:1px solid var(--c-btn-border);background:transparent;
+  color:var(--c-btn-text);cursor:pointer;
   transition:all .15s;white-space:nowrap;
 }
-.ctrl-btn:hover{border-color:rgba(59,108,211,.6);color:rgba(255,255,255,.8)}
-.ctrl-btn.on{background:#3B6CD3;border-color:#3B6CD3;color:#fff}
+.ctrl-btn:hover{border-color:var(--c-btn-hover-border);color:var(--c-btn-hover-text)}
+.ctrl-btn.on{background:var(--c-btn-on-bg);border-color:var(--c-btn-on-border);color:var(--c-btn-on-text)}
 
 /* ── SVG ── */
 .map-body{position:relative;width:100%}
@@ -63,17 +111,17 @@ body{
 /* ── TOOLTIP ── */
 .tt{
   position:absolute;pointer-events:none;
-  background:#2A2A28;border:1px solid rgba(255,255,255,.1);border-radius:6px;
+  background:var(--c-tt-bg);border:1px solid var(--c-tt-border);border-radius:6px;
   padding:8px 12px;max-width:260px;
-  box-shadow:0 4px 16px rgba(0,0,0,.4);
+  box-shadow:0 4px 16px var(--c-tt-shadow);
   opacity:0;transition:opacity .12s;z-index:30;
 }
 .tt.show{opacity:1}
-.tt-name{font-family:'Prompt',sans-serif;font-weight:600;font-size:12px;color:#fff;margin-bottom:2px}
-.tt-sub{font-size:10px;color:rgba(255,255,255,.4);margin-bottom:6px}
-.tt-desc{font-size:10.5px;line-height:1.55;color:rgba(255,255,255,.6)}
+.tt-name{font-family:'Prompt',sans-serif;font-weight:600;font-size:12px;color:var(--c-tt-name);margin-bottom:2px}
+.tt-sub{font-size:10px;color:var(--c-tt-sub);margin-bottom:6px}
+.tt-desc{font-size:10.5px;line-height:1.55;color:var(--c-tt-desc)}
 .tt-flows{margin-top:8px;display:flex;flex-direction:column;gap:3px}
-.tt-flow{display:flex;align-items:center;gap:6px;font-size:9.5px;color:rgba(255,255,255,.45)}
+.tt-flow{display:flex;align-items:center;gap:6px;font-size:9.5px;color:var(--c-tt-flow)}
 .tt-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
 
 /* ── LEGEND ── */
@@ -81,9 +129,9 @@ body{
   display:flex;align-items:center;justify-content:center;
   flex-wrap:wrap;gap:16px;row-gap:6px;
   padding:14px 20px 16px;
-  border-top:1px solid rgba(255,255,255,.05);
+  border-top:1px solid var(--c-legend-border);
 }
-.lg{display:flex;align-items:center;gap:5px;font-size:9.5px;color:rgba(255,255,255,.35);white-space:nowrap}
+.lg{display:flex;align-items:center;gap:5px;font-size:9.5px;color:var(--c-legend-text);white-space:nowrap}
 .lg-line{width:16px;height:2px;border-radius:1px}
 .lg-line.dash{background:none!important;border-top:1.5px dashed}
 
@@ -121,9 +169,9 @@ body{
     <div class="lg"><div class="lg-line" style="background:#3B6CD3"></div>IATI infrastructure</div>
     <div class="lg"><div class="lg-line" style="background:#5B8AE8"></div>AIDA Explorer</div>
     <div class="lg"><div class="lg-line" style="background:#28B583"></div>AIDA Publisher</div>
-    <div class="lg"><div class="lg-line" style="background:#E07C5A"></div>Insights & value</div>
-    <div class="lg"><div class="lg-line dash" style="border-color:rgba(255,255,255,.25)"></div>Governance</div>
-    <div class="lg"><div class="lg-line dash" style="border-color:rgba(255,255,255,.15)"></div>Existing tools</div>
+    <div class="lg"><div class="lg-line" style="background:#E07C5A"></div>Insights &amp; value</div>
+    <div class="lg"><div class="lg-line dash" style="border-color:var(--c-legend-dash-gov)"></div>Governance</div>
+    <div class="lg"><div class="lg-line dash" style="border-color:var(--c-legend-dash-tool)"></div>Existing tools</div>
   </div>
 </div>
 
@@ -132,61 +180,118 @@ const NS='http://www.w3.org/2000/svg';
 const svg=document.getElementById('svg');
 
 /* ═══════════════════════════════════════════════════
-   LAYOUT — redesigned for 782×540 viewBox
-   All coordinates hand-tuned for this canvas.
+   THEME OBJECTS
+   All SVG colors live here — swap T to switch themes.
 ═══════════════════════════════════════════════════ */
-
-const ZONES=[
-  {id:'pub',  label:'Data Publishers', x:14, y:65, w:118,h:400,
-   fill:'rgba(29,158,117,.06)',stroke:'rgba(29,158,117,.25)',lc:'#1D9E75'},
-  {id:'iati', label:'IATI Ecosystem',  x:145,y:65, w:210,h:400,
-   fill:'rgba(59,108,211,.05)',stroke:'rgba(59,108,211,.22)',lc:'#3B6CD3'},
-  {id:'aida', label:'AIDA Platform',   x:370,y:42, w:128,h:432,
-   fill:'rgba(59,108,211,.1)', stroke:'#3B6CD3',             lc:'#5B8AE8',hi:true},
-  {id:'users',label:'End Users',       x:514,y:65, w:254,h:400,
-   fill:'rgba(255,255,255,.02)',stroke:'rgba(255,255,255,.08)',lc:'rgba(255,255,255,.3)'},
-];
-
-const CS={
-  ctx:  {fill:'#252523',stroke:'rgba(255,255,255,.12)',lc:'rgba(255,255,255,.6)', sc:'rgba(255,255,255,.3)',zl:'Global Aid Context'},
-  pub:  {fill:'#1E2E24',stroke:'#1D9E75',              lc:'#5AE0A8',             sc:'rgba(255,255,255,.35)',zl:'Data Publisher'},
-  gov:  {fill:'#252523',stroke:'rgba(255,255,255,.15)', lc:'rgba(255,255,255,.55)',sc:'rgba(255,255,255,.25)',zl:'IATI Governance'},
-  infra:{fill:'#1A2540',stroke:'#3B6CD3',               lc:'#8AB4FF',             sc:'#5B8AE8',             zl:'IATI Infrastructure'},
-  tool: {fill:'#252523',stroke:'rgba(255,255,255,.12)',  lc:'rgba(255,255,255,.5)', sc:'rgba(255,255,255,.25)',zl:'Existing Tool'},
-  aida: {fill:'#3B6CD3',stroke:'#5B8AE8',               lc:'#fff',                sc:'rgba(255,255,255,.6)', zl:'AIDA Platform'},
-  user: {fill:'#252523',stroke:'rgba(255,255,255,.12)',  lc:'rgba(255,255,255,.75)',sc:'rgba(255,255,255,.35)',zl:'End User'},
+const DARK={
+  svgBg:'#1A1A1A',
+  grid:'rgba(255,255,255,.02)',
+  iatiSublabel:'rgba(255,255,255,.2)',
+  iatiDivider:'rgba(59,108,211,.08)',
+  contextLabel:'rgba(255,255,255,.18)',
+  connector:'rgba(255,255,255,.06)',
+  zoneHiInner:'rgba(59,108,211,.08)',
+  aidaInnerBorder:'rgba(255,255,255,.1)',
+  aidaDivider:'rgba(255,255,255,.15)',
+  aidaTitle:'#fff',
+  aidaSub:'rgba(255,255,255,.55)',
+  neutralDot:'rgba(255,255,255,.2)',
+  ZONES:[
+    {id:'pub',  label:'Data Publishers',x:14, y:65,w:118,h:400,fill:'rgba(29,158,117,.06)',stroke:'rgba(29,158,117,.25)',lc:'#1D9E75'},
+    {id:'iati', label:'IATI Ecosystem', x:145,y:65,w:210,h:400,fill:'rgba(59,108,211,.05)',stroke:'rgba(59,108,211,.22)',lc:'#3B6CD3'},
+    {id:'aida', label:'AIDA Platform',  x:370,y:42,w:128,h:432,fill:'rgba(59,108,211,.1)', stroke:'#3B6CD3',            lc:'#5B8AE8',hi:true},
+    {id:'users',label:'End Users',      x:514,y:65,w:254,h:400,fill:'rgba(255,255,255,.02)',stroke:'rgba(255,255,255,.08)',lc:'rgba(255,255,255,.3)'},
+  ],
+  CS:{
+    ctx:  {fill:'#252523',stroke:'rgba(255,255,255,.12)',lc:'rgba(255,255,255,.6)', sc:'rgba(255,255,255,.3)', zl:'Global Aid Context'},
+    pub:  {fill:'#1E2E24',stroke:'#1D9E75',              lc:'#5AE0A8',             sc:'rgba(255,255,255,.35)',zl:'Data Publisher'},
+    gov:  {fill:'#252523',stroke:'rgba(255,255,255,.15)', lc:'rgba(255,255,255,.55)',sc:'rgba(255,255,255,.25)',zl:'IATI Governance'},
+    infra:{fill:'#1A2540',stroke:'#3B6CD3',               lc:'#8AB4FF',             sc:'#5B8AE8',             zl:'IATI Infrastructure'},
+    tool: {fill:'#252523',stroke:'rgba(255,255,255,.12)',  lc:'rgba(255,255,255,.5)', sc:'rgba(255,255,255,.25)',zl:'Existing Tool'},
+    aida: {fill:'#3B6CD3',stroke:'#5B8AE8',               lc:'#fff',                sc:'rgba(255,255,255,.6)', zl:'AIDA Platform'},
+    user: {fill:'#252523',stroke:'rgba(255,255,255,.12)',  lc:'rgba(255,255,255,.75)',sc:'rgba(255,255,255,.35)',zl:'End User'},
+  },
+  ES:{
+    publish:   {stroke:'#1D9E75',              w:1.2,dash:[],    anim:'fa', aida:false},
+    govern:    {stroke:'rgba(255,255,255,.15)', w:0.7,dash:[4,3],anim:'',  aida:false},
+    infra:     {stroke:'#3B6CD3',              w:1.2,dash:[],    anim:'fa', aida:false},
+    tool_acc:  {stroke:'rgba(255,255,255,.1)',  w:0.7,dash:[3,3],anim:'',  aida:false},
+    aida_expl: {stroke:'#5B8AE8',              w:2.0,dash:[],    anim:'fa2',aida:true},
+    aida_pub:  {stroke:'#28B583',              w:1.8,dash:[],    anim:'fa', aida:true},
+    aida_out:  {stroke:'#E07C5A',              w:1.4,dash:[],    anim:'fa3',aida:true},
+  },
+  MC:{
+    publish:'#1D9E75',govern:'rgba(255,255,255,.15)',infra:'#3B6CD3',
+    tool_acc:'rgba(255,255,255,.1)',aida_expl:'#5B8AE8',aida_pub:'#28B583',aida_out:'#E07C5A'
+  },
 };
 
+const LIGHT={
+  svgBg:'#F8F7F4',
+  grid:'rgba(0,0,0,.04)',
+  iatiSublabel:'#B4B2A9',
+  iatiDivider:'rgba(59,108,211,.12)',
+  contextLabel:'#B4B2A9',
+  connector:'rgba(0,0,0,.1)',
+  zoneHiInner:'rgba(59,108,211,.12)',
+  aidaInnerBorder:'rgba(255,255,255,.15)',
+  aidaDivider:'rgba(255,255,255,.2)',
+  aidaTitle:'#fff',
+  aidaSub:'rgba(255,255,255,.65)',
+  neutralDot:'#B4B2A9',
+  ZONES:[
+    {id:'pub',  label:'Data Publishers',x:14, y:65,w:118,h:400,fill:'rgba(29,158,117,.05)',stroke:'rgba(29,158,117,.35)',lc:'#1D9E75'},
+    {id:'iati', label:'IATI Ecosystem', x:145,y:65,w:210,h:400,fill:'rgba(59,108,211,.04)',stroke:'rgba(59,108,211,.3)', lc:'#3B6CD3'},
+    {id:'aida', label:'AIDA Platform',  x:370,y:42,w:128,h:432,fill:'rgba(59,108,211,.07)',stroke:'#3B6CD3',            lc:'#3B6CD3',hi:true},
+    {id:'users',label:'End Users',      x:514,y:65,w:254,h:400,fill:'rgba(95,94,90,.03)',   stroke:'rgba(95,94,90,.2)',  lc:'#888780'},
+  ],
+  CS:{
+    ctx:  {fill:'#fff',    stroke:'#D3D1C7', lc:'#5F5E5A', sc:'#B4B2A9', zl:'Global Aid Context'},
+    pub:  {fill:'#fff',    stroke:'#1D9E75', lc:'#0F6E56', sc:'#5F5E5A', zl:'Data Publisher'},
+    gov:  {fill:'#fff',    stroke:'#B4B2A9', lc:'#5F5E5A', sc:'#B4B2A9', zl:'IATI Governance'},
+    infra:{fill:'#EEF4FF', stroke:'#3B6CD3', lc:'#185FA5', sc:'#3B6CD3', zl:'IATI Infrastructure'},
+    tool: {fill:'#fff',    stroke:'#D3D1C7', lc:'#888780', sc:'#B4B2A9', zl:'Existing Tool'},
+    aida: {fill:'#3B6CD3', stroke:'#185FA5', lc:'#fff',    sc:'rgba(255,255,255,.65)', zl:'AIDA Platform'},
+    user: {fill:'#fff',    stroke:'#D3D1C7', lc:'#2C2C2A', sc:'#888780', zl:'End User'},
+  },
+  ES:{
+    publish:   {stroke:'#1D9E75',w:1.2,dash:[],    anim:'fa', aida:false},
+    govern:    {stroke:'#B4B2A9', w:0.7,dash:[4,3],anim:'',  aida:false},
+    infra:     {stroke:'#3B6CD3', w:1.2,dash:[],   anim:'fa', aida:false},
+    tool_acc:  {stroke:'#D3D1C7', w:0.7,dash:[3,3],anim:'',  aida:false},
+    aida_expl: {stroke:'#5B8AE8', w:2.0,dash:[],   anim:'fa2',aida:true},
+    aida_pub:  {stroke:'#28B583', w:1.8,dash:[],   anim:'fa', aida:true},
+    aida_out:  {stroke:'#E07C5A', w:1.4,dash:[],   anim:'fa3',aida:true},
+  },
+  MC:{
+    publish:'#1D9E75',govern:'#B4B2A9',infra:'#3B6CD3',
+    tool_acc:'#D3D1C7',aida_expl:'#5B8AE8',aida_pub:'#28B583',aida_out:'#E07C5A'
+  },
+};
+
+/* Active theme — updated by setTheme() */
+let T=DARK;
+
+/* ═══════════════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════════════ */
 const NODES=[
-  /* context chips */
   {id:'unocha',   zone:'ctx', cx:55,  cy:34, w:82,h:26, label:'UN OCHA / HDX',   sub:'Humanitarian data',   cat:'ctx'},
   {id:'worldbank',zone:'ctx', cx:152, cy:34, w:82,h:26, label:'World Bank',       sub:'Open data',           cat:'ctx'},
   {id:'oecddac',  zone:'ctx', cx:245, cy:34, w:78,h:26, label:'OECD DAC',         sub:'CRS reporting',       cat:'ctx'},
   {id:'donorgovs',zone:'ctx', cx:342, cy:34, w:92,h:26, label:'Donor Govts',      sub:'Bilateral aid flows', cat:'ctx'},
-
-  /* publishers */
   {id:'ngos',  zone:'pub', cx:73,cy:145, w:100,h:38, label:'NGOs / CSOs',     sub:'Programme data',  cat:'pub'},
   {id:'multi', zone:'pub', cx:73,cy:215, w:100,h:38, label:'Multilaterals',   sub:'UN, MDBs, EU',    cat:'pub'},
   {id:'rcpt',  zone:'pub', cx:73,cy:285, w:100,h:38, label:'Recipient Govts', sub:'Country systems', cat:'pub'},
   {id:'found', zone:'pub', cx:73,cy:355, w:100,h:38, label:'Foundations',     sub:'Private sector',  cat:'pub'},
-
-  /* IATI governance */
   {id:'std',    zone:'iati',cx:205,cy:140, w:92,h:36, label:'IATI Standard',  sub:'XML schema',      cat:'gov'},
   {id:'govbody',zone:'iati',cx:310,cy:140, w:92,h:36, label:'Governing Body', sub:'Members & board', cat:'gov'},
-
-  /* IATI infrastructure */
   {id:'registry',  zone:'iati',cx:250,cy:225, w:112,h:40, label:'IATI Registry',  sub:'Dataset store',  cat:'infra'},
   {id:'datastore', zone:'iati',cx:250,cy:300, w:112,h:40, label:'IATI Datastore', sub:'API query layer', cat:'infra'},
-
-  /* existing tools */
   {id:'dportal',  zone:'iati',cx:175,cy:385, w:72,h:30, label:'D-Portal',  sub:'Browse IATI', cat:'tool'},
   {id:'oipa',     zone:'iati',cx:252,cy:385, w:60,h:30, label:'OIPA',      sub:'API wrapper', cat:'tool'},
   {id:'aidstream',zone:'iati',cx:330,cy:385, w:76,h:30, label:'Aidstream', sub:'Publish only',cat:'tool'},
-
-  /* AIDA */
   {id:'aida',zone:'aida',cx:434,cy:278, w:108,h:62, label:'AIDA', sub:'Explorer + Publisher', cat:'aida', isAida:true},
-
-  /* end users */
   {id:'analysts',   zone:'users',cx:590,cy:145, w:108,h:38, label:'Analysts',        sub:'Data-driven decisions', cat:'user'},
   {id:'policy',     zone:'users',cx:715,cy:145, w:108,h:38, label:'Policy Makers',    sub:'Strategic oversight',   cat:'user'},
   {id:'ngocoord',   zone:'users',cx:590,cy:265, w:108,h:38, label:'NGO Coordinators', sub:'Programme mgmt',        cat:'user'},
@@ -195,18 +300,7 @@ const NODES=[
   {id:'meteams',    zone:'users',cx:715,cy:385, w:108,h:38, label:'M&E Staff',        sub:'Impact tracking',       cat:'user'},
 ];
 
-const ES={
-  publish:   {stroke:'#1D9E75',w:1.2,dash:[],    anim:'fa', aida:false},
-  govern:    {stroke:'rgba(255,255,255,.15)',w:0.7,dash:[4,3],anim:'',  aida:false},
-  infra:     {stroke:'#3B6CD3',w:1.2,dash:[],    anim:'fa', aida:false},
-  tool_acc:  {stroke:'rgba(255,255,255,.1)',w:0.7,dash:[3,3],anim:'',  aida:false},
-  aida_expl: {stroke:'#5B8AE8',w:2.0,dash:[],    anim:'fa2',aida:true},
-  aida_pub:  {stroke:'#28B583',w:1.8,dash:[],    anim:'fa', aida:true},
-  aida_out:  {stroke:'#E07C5A',w:1.4,dash:[],    anim:'fa3',aida:true},
-};
-
 const EDGES=[
-  /* publishers → registry */
   {id:'e-ngos',from:'ngos', to:'registry',type:'publish',
    pts:{f:[123,150],t:[194,228],c1:[152,150],c2:[166,228]}},
   {id:'e-mul', from:'multi',to:'registry',type:'publish',
@@ -215,34 +309,22 @@ const EDGES=[
    pts:{f:[123,282],t:[194,232],c1:[152,282],c2:[166,252]}},
   {id:'e-fnd', from:'found',to:'registry',type:'publish',
    pts:{f:[123,350],t:[194,238],c1:[152,350],c2:[166,280]}},
-
-  /* governance */
   {id:'e-gb-std', from:'govbody',to:'std',type:'govern',
    pts:{f:[264,140],t:[251,140],c1:[260,140],c2:[255,140]}},
   {id:'e-std-reg',from:'std',to:'registry',type:'govern',
    pts:{f:[205,158],t:[226,205],c1:[205,178],c2:[218,190]}},
-
-  /* infrastructure */
   {id:'e-reg-ds', from:'registry',to:'datastore',type:'infra',
    pts:{f:[250,245],t:[250,280],c1:[250,258],c2:[250,268]}},
   {id:'e-ds-dp',  from:'datastore',to:'dportal',type:'tool_acc',
    pts:{f:[230,320],t:[175,370],c1:[230,342],c2:[175,356]}},
   {id:'e-ds-oipa',from:'datastore',to:'oipa',type:'tool_acc',
    pts:{f:[252,320],t:[252,370],c1:[252,338],c2:[252,356]}},
-
-  /* Aidstream → Registry */
   {id:'e-aids-reg',from:'aidstream',to:'registry',type:'publish',
    pts:{f:[330,370],t:[306,245],c1:[352,328],c2:[328,225]}},
-
-  /* AIDA Explorer ← Datastore */
   {id:'e-ds-aida',from:'datastore',to:'aida',type:'aida_expl',
    pts:{f:[306,295],t:[380,275],c1:[338,295],c2:[360,275]}},
-
-  /* AIDA Publisher → Registry */
   {id:'e-aida-reg',from:'aida',to:'registry',type:'aida_pub',
    pts:{f:[380,258],t:[306,218],c1:[348,188],c2:[318,188]}},
-
-  /* AIDA → end users */
   {id:'e-aida-ana',from:'aida',to:'analysts',type:'aida_out',
    pts:{f:[488,258],t:[536,150],c1:[514,258],c2:[514,150]}},
   {id:'e-aida-pol',from:'aida',to:'policy',type:'aida_out',
@@ -257,53 +339,51 @@ const EDGES=[
    pts:{f:[488,296],t:[661,385],c1:[576,296],c2:[576,385]}},
 ];
 
-/* ═══════════════════════════════════════════════════
-   DETAIL DATA (for tooltips)
-═══════════════════════════════════════════════════ */
+/* 'neutral' dot color resolves to T.neutralDot at render time */
 const DD={
   unocha:{desc:'UN OCHA and Humanitarian Data Exchange (HDX). Complements IATI data across the open development data landscape.',
-   flows:[{c:'rgba(255,255,255,.2)',l:'Publishes humanitarian datasets'}]},
+   flows:[{c:'neutral',l:'Publishes humanitarian datasets'}]},
   worldbank:{desc:'World Bank Open Data portal — development indicators, project data and financial flows alongside IATI.',
-   flows:[{c:'rgba(255,255,255,.2)',l:'Complementary development data'}]},
+   flows:[{c:'neutral',l:'Complementary development data'}]},
   oecddac:{desc:'OECD DAC publishes CRS statistics on bilateral and multilateral aid. Key reference for policy makers.',
-   flows:[{c:'rgba(255,255,255,.2)',l:'CRS donor reporting data'}]},
-  donorgovs:{desc:'Bilateral donor governments — FCDO, USAID, GIZ, SIDA — who fund development and mandate IATI publishing.',
-   flows:[{c:'rgba(255,255,255,.2)',l:'Mandate IATI transparency'}]},
+   flows:[{c:'neutral',l:'CRS donor reporting data'}]},
+  donorgovs:{desc:'Bilateral donor governments — FCDO, USAID, GIZ, SIDA — who fund development and mandate IATI transparency.',
+   flows:[{c:'neutral',l:'Mandate IATI transparency'}]},
   ngos:{desc:'The most numerous IATI publishers. Implement programmes across health, WASH, education, humanitarian response. AIDA Publisher reduces their publication burden.',
    flows:[{c:'#1D9E75',l:'Publish activity data to IATI Registry'},{c:'#28B583',l:'Upload via AIDA Publisher'}]},
   multi:{desc:'UN agencies, multilateral development banks and the EU. Large-volume publishers with complex structures. Key Explorer users.',
    flows:[{c:'#1D9E75',l:'Publish high-volume programme data'}]},
-  rcpt:{desc:'Recipient country governments tracking incoming aid through national systems, showing how external flows align with national budgets.',
+  rcpt:{desc:'Recipient country governments tracking incoming aid through national systems.',
    flows:[{c:'#1D9E75',l:'Publish country-level aid flow data'}]},
   found:{desc:'Private foundations and philanthropic organisations increasingly aligning with IATI to publish development finance data.',
    flows:[{c:'#1D9E75',l:'Publish development finance data'}]},
   std:{desc:'The IATI Standard defines the open data format: XML schemas, codelists and reporting rules. AIDA Publisher validates against it automatically.',
-   flows:[{c:'rgba(255,255,255,.2)',l:'Structures Registry schema'},{c:'rgba(255,255,255,.2)',l:'Defines valid IATI data'}]},
+   flows:[{c:'neutral',l:'Structures Registry schema'},{c:'neutral',l:'Defines valid IATI data'}]},
   govbody:{desc:'Member organisations — donor governments, multilaterals and civil society — plus an elected board stewarding the Standard.',
-   flows:[{c:'rgba(255,255,255,.2)',l:'Governs the IATI Standard'}]},
+   flows:[{c:'neutral',l:'Governs the IATI Standard'}]},
   registry:{desc:'Central repository for all IATI-compliant XML datasets. AIDA Publisher submits directly via the Registry API.',
    flows:[{c:'#1D9E75',l:'Receives data from all publishers'},{c:'#28B583',l:'Receives AIDA Publisher submissions'},{c:'#3B6CD3',l:'Feeds the IATI Datastore'}]},
-  datastore:{desc:'The official IATI API query layer. Indexes all Registry datasets. AIDA Explorer reads live from it — dashboards show current data.',
+  datastore:{desc:'The official IATI API query layer. Indexes all Registry datasets. AIDA Explorer reads live from it.',
    flows:[{c:'#3B6CD3',l:'Indexes all IATI Registry data'},{c:'#5B8AE8',l:'Serves live data to AIDA Explorer'}]},
   dportal:{desc:'Existing IATI data browser. Explore-only, no publishing. Requires more data literacy than AIDA Explorer.',
-   flows:[{c:'rgba(255,255,255,.15)',l:'Queries IATI Datastore'}]},
+   flows:[{c:'neutral',l:'Queries IATI Datastore'}]},
   oipa:{desc:'REST API wrapper over the Datastore. Powerful for developers, inaccessible to non-specialists.',
-   flows:[{c:'rgba(255,255,255,.15)',l:'Developer API access'}]},
+   flows:[{c:'neutral',l:'Developer API access'}]},
   aidstream:{desc:'Existing IATI publishing tool. Publish-only — no analytics, no Explorer, no partner discovery.',
    flows:[{c:'#1D9E75',l:'Publishes data to Registry'}]},
   aida:{desc:'The only platform that does both. Explorer: interactive dashboards from live IATI data. Publisher: guided 3-step workflow (upload → validate → publish).',
    flows:[{c:'#5B8AE8',l:'Explorer: queries live IATI Datastore'},{c:'#28B583',l:'Publisher: submits to IATI Registry'},{c:'#E07C5A',l:'Delivers insights to all user types'}]},
   analysts:{desc:'Researchers and M&E specialists tracking funding trends, filtering by sector, exporting charts — without manual data cleaning.',
    flows:[{c:'#E07C5A',l:'Explore and filter via dashboards'}]},
-  policy:{desc:'Senior officials needing high-level sector and country comparisons, executive-friendly summaries for aid portfolio decisions.',
+  policy:{desc:'Senior officials needing high-level sector and country comparisons for aid portfolio decisions.',
    flows:[{c:'#E07C5A',l:'Access sector dashboards and summaries'}]},
-  ngocoord:{desc:'Dual-mode users: publish via AIDA Publisher, find partners via AIDA Explorer. Manage programmes and discover collaborators.',
+  ngocoord:{desc:'Dual-mode users: publish via AIDA Publisher, find partners via AIDA Explorer.',
    flows:[{c:'#28B583',l:'Publish via AIDA Publisher'},{c:'#E07C5A',l:'Explore partner data via Explorer'}]},
-  journalists:{desc:'Investigative journalists researching aid spending, tracking funding, verifying NGO claims — without specialist data skills.',
+  journalists:{desc:'Investigative journalists researching aid spending and verifying NGO claims — without specialist data skills.',
    flows:[{c:'#E07C5A',l:'Search and explore aid flows'}]},
-  donors:{desc:'Institutional funders exploring aid portfolios to identify underfunded areas and make evidence-backed funding decisions.',
+  donors:{desc:'Institutional funders exploring aid portfolios to identify underfunded areas and make evidence-backed decisions.',
    flows:[{c:'#E07C5A',l:'Evaluate aid portfolios via AIDA'}]},
-  meteams:{desc:'M&E and programme staff tracking indicator targets vs actuals, comparing outcomes — without querying raw IATI XML.',
+  meteams:{desc:'M&E and programme staff tracking indicator targets vs actuals without querying raw IATI XML.',
    flows:[{c:'#E07C5A',l:'Track programme results via AIDA'}]},
 };
 
@@ -323,20 +403,17 @@ function txt(str,attrs,parent){
 function rr(x,y,w,h,r,attrs,parent){
   return el('rect',{x,y,width:w,height:h,rx:r,...(attrs||{})},parent);
 }
+function dotColor(c){ return c==='neutral'?T.neutralDot:c; }
 
 /* ═══════════════════════════════════════════════════
-   RENDER
+   RENDER — reads from T for all SVG colors
 ═══════════════════════════════════════════════════ */
 function render(){
   svg.innerHTML='';
 
-  const defs=el('defs',{},svg);
   /* arrow markers */
-  const MC={
-    publish:'#1D9E75',govern:'rgba(255,255,255,.15)',infra:'#3B6CD3',
-    tool_acc:'rgba(255,255,255,.1)',aida_expl:'#5B8AE8',aida_pub:'#28B583',aida_out:'#E07C5A'
-  };
-  Object.entries(MC).forEach(([k,c])=>{
+  const defs=el('defs',{},svg);
+  Object.entries(T.MC).forEach(([k,c])=>{
     const m=el('marker',{id:'m-'+k,viewBox:'0 0 10 10',refX:'8',refY:'5',
       markerWidth:'4.5',markerHeight:'4.5',orient:'auto-start-reverse'},defs);
     el('path',{d:'M2 1L8 5L2 9',fill:'none',stroke:c,'stroke-width':'1.5',
@@ -344,22 +421,22 @@ function render(){
   });
 
   /* background */
-  rr(0,0,782,540,0,{fill:'#1A1A1A'},svg);
+  rr(0,0,782,540,0,{fill:T.svgBg},svg);
 
   /* subtle grid */
-  const grid=el('g',{stroke:'rgba(255,255,255,.02)','stroke-width':'0.5'},svg);
+  const grid=el('g',{stroke:T.grid,'stroke-width':'0.5'},svg);
   for(let gx=40;gx<782;gx+=40) el('line',{x1:gx,y1:0,x2:gx,y2:540},grid);
   for(let gy=40;gy<540;gy+=40) el('line',{x1:0,y1:gy,x2:782,y2:gy},grid);
 
   /* zones */
-  ZONES.forEach(z=>{
+  T.ZONES.forEach(z=>{
     const g=el('g',{},svg);
     rr(z.x,z.y,z.w,z.h,8,{fill:z.fill,stroke:z.stroke,
       'stroke-width':z.hi?1:0.5,
       'stroke-dasharray':z.hi?'none':'4 3'},g);
     if(z.hi){
       rr(z.x+1,z.y+1,z.w-2,z.h-2,7,{fill:'none',
-        stroke:'rgba(59,108,211,.08)','stroke-width':'0.5'},g);
+        stroke:T.zoneHiInner,'stroke-width':'0.5'},g);
     }
     txt(z.label.toUpperCase(),{
       x:z.x+8,y:z.y+14,fill:z.lc,
@@ -370,39 +447,35 @@ function render(){
 
   /* IATI sub-labels */
   [{y:120,label:'GOVERNANCE'},{y:205,label:'INFRASTRUCTURE'},{y:365,label:'COMPARABLE TOOLS'}].forEach(a=>{
-    txt(a.label,{x:152,y:a.y,fill:'rgba(255,255,255,.2)',
+    txt(a.label,{x:152,y:a.y,fill:T.iatiSublabel,
       'font-family':"'Prompt',sans-serif",'font-size':'6.5',
       'font-weight':'500','letter-spacing':'0.08em'},svg);
   });
-  /* dividers */
   [193,358].forEach(yd=>{
-    el('line',{x1:150,y1:yd,x2:350,y2:yd,
-      stroke:'rgba(59,108,211,.08)','stroke-width':'0.5'},svg);
+    el('line',{x1:150,y1:yd,x2:350,y2:yd,stroke:T.iatiDivider,'stroke-width':'0.5'},svg);
   });
 
   /* context label */
-  txt('GLOBAL AID CONTEXT',{x:55,y:14,fill:'rgba(255,255,255,.18)',
+  txt('GLOBAL AID CONTEXT',{x:55,y:14,fill:T.contextLabel,
     'font-family':"'Prompt',sans-serif",'font-size':'6.5',
     'font-weight':'500','letter-spacing':'0.1em'},svg);
 
-  /* context → zone connectors */
+  /* context chip connectors */
   [{cx:55,ty:65,tx:68},{cx:152,ty:65,tx:200},{cx:245,ty:65,tx:255},{cx:342,ty:65,tx:310}].forEach(c=>{
     el('line',{x1:c.cx,y1:47,x2:c.tx,y2:c.ty,
-      stroke:'rgba(255,255,255,.06)','stroke-width':'0.5',
-      'stroke-dasharray':'2 3'},svg);
+      stroke:T.connector,'stroke-width':'0.5','stroke-dasharray':'2 3'},svg);
   });
 
   /* edges */
   const edgeG=el('g',{id:'edges'},svg);
   EDGES.forEach(e=>{
-    const s=ES[e.type];
+    const s=T.ES[e.type];
     const p=e.pts;
     const d=`M${p.f[0]} ${p.f[1]} C${p.c1[0]} ${p.c1[1]},${p.c2[0]} ${p.c2[1]},${p.t[0]} ${p.t[1]}`;
-    const da=s.anim ? '6 5' : (s.dash.length ? s.dash.join(' ') : 'none');
+    const da=s.anim?'6 5':(s.dash.length?s.dash.join(' '):'none');
     const pe=el('path',{
       d,fill:'none',stroke:s.stroke,'stroke-width':s.w,
-      'stroke-linecap':'round',
-      'stroke-dasharray':da,
+      'stroke-linecap':'round','stroke-dasharray':da,
       'marker-end':'url(#m-'+e.type+')',
       'data-eid':e.id,'data-aida':s.aida?'1':'0',
     },edgeG);
@@ -411,7 +484,7 @@ function render(){
 
   /* nodes */
   NODES.forEach(n=>{
-    const s=CS[n.cat];
+    const s=T.CS[n.cat];
     const x=n.cx-n.w/2, y=n.cy-n.h/2;
     const g=el('g',{'data-nid':n.id,style:'cursor:pointer'},svg);
     g.addEventListener('mouseenter',(ev)=>onHover(n,g,ev));
@@ -419,36 +492,26 @@ function render(){
     g.addEventListener('mouseleave',()=>onLeave(n,g));
     g.addEventListener('click',()=>onNodeClick(n));
 
-    rr(x,y,n.w,n.h,6,{
-      fill:s.fill,stroke:s.stroke,
-      'stroke-width':n.isAida?1.2:'0.5',
-      class:'nr'
-    },g);
+    rr(x,y,n.w,n.h,6,{fill:s.fill,stroke:s.stroke,
+      'stroke-width':n.isAida?1.2:'0.5',class:'nr'},g);
 
     if(n.isAida){
-      rr(x,y,n.w,n.h,6,{fill:'none',stroke:'rgba(255,255,255,.1)','stroke-width':'0.5'},g);
-      el('line',{x1:n.cx,y1:y+8,x2:n.cx,y2:y+n.h-8,
-        stroke:'rgba(255,255,255,.15)','stroke-width':'0.5'},g);
-      txt('AIDA',{x:n.cx,y:n.cy-6,'text-anchor':'middle',
-        'dominant-baseline':'middle',fill:'#fff',
-        'font-family':"'Prompt',sans-serif",'font-size':'14','font-weight':'700'},g);
-      txt('Explorer',{x:n.cx-n.w/4,y:n.cy+10,'text-anchor':'middle',
-        'dominant-baseline':'middle',fill:'rgba(255,255,255,.55)',
-        'font-family':"'Inter',sans-serif",'font-size':'8'},g);
-      txt('Publisher',{x:n.cx+n.w/4,y:n.cy+10,'text-anchor':'middle',
-        'dominant-baseline':'middle',fill:'rgba(255,255,255,.55)',
-        'font-family':"'Inter',sans-serif",'font-size':'8'},g);
+      rr(x,y,n.w,n.h,6,{fill:'none',stroke:T.aidaInnerBorder,'stroke-width':'0.5'},g);
+      el('line',{x1:n.cx,y1:y+8,x2:n.cx,y2:y+n.h-8,stroke:T.aidaDivider,'stroke-width':'0.5'},g);
+      txt('AIDA',{x:n.cx,y:n.cy-6,'text-anchor':'middle','dominant-baseline':'middle',
+        fill:T.aidaTitle,'font-family':"'Prompt',sans-serif",'font-size':'14','font-weight':'700'},g);
+      txt('Explorer',{x:n.cx-n.w/4,y:n.cy+10,'text-anchor':'middle','dominant-baseline':'middle',
+        fill:T.aidaSub,'font-family':"'Inter',sans-serif",'font-size':'8'},g);
+      txt('Publisher',{x:n.cx+n.w/4,y:n.cy+10,'text-anchor':'middle','dominant-baseline':'middle',
+        fill:T.aidaSub,'font-family':"'Inter',sans-serif",'font-size':'8'},g);
     } else {
       const fs=n.cat==='ctx'?'8.5':'9.5';
-      const ly=n.sub ? n.cy-5 : n.cy;
-      txt(n.label,{x:n.cx,y:ly,'text-anchor':'middle',
-        'dominant-baseline':'middle',fill:s.lc,
-        'font-family':"'Prompt',sans-serif",'font-size':fs,'font-weight':'500'},g);
+      const ly=n.sub?n.cy-5:n.cy;
+      txt(n.label,{x:n.cx,y:ly,'text-anchor':'middle','dominant-baseline':'middle',
+        fill:s.lc,'font-family':"'Prompt',sans-serif",'font-size':fs,'font-weight':'500'},g);
       if(n.sub){
-        const sfs=n.cat==='ctx'?'7':'7.5';
-        txt(n.sub,{x:n.cx,y:n.cy+7,'text-anchor':'middle',
-          'dominant-baseline':'middle',fill:s.sc,
-          'font-family':"'Inter',sans-serif",'font-size':sfs},g);
+        txt(n.sub,{x:n.cx,y:n.cy+7,'text-anchor':'middle','dominant-baseline':'middle',
+          fill:s.sc,'font-family':"'Inter',sans-serif",'font-size':n.cat==='ctx'?'7':'7.5'},g);
       }
     }
 
@@ -471,15 +534,15 @@ function connected(nid){
   return s;
 }
 
-function applyOpacity(nodeIds=null, aidaOnly=false){
+function applyOpacity(nodeIds=null,aidaOnly=false){
   svg.querySelectorAll('[data-nid]').forEach(g=>{
     const nid=g.getAttribute('data-nid');
     let vis=true;
     if(nodeIds) vis=nodeIds.has(nid);
     if(aidaOnly){
       const node=nodeById(nid);
-      vis = node && (node.cat==='aida'||node.cat==='infra'||
-        EDGES.some(e=>ES[e.type].aida&&(e.from===nid||e.to===nid)));
+      vis=node&&(node.cat==='aida'||node.cat==='infra'||
+        EDGES.some(e=>T.ES[e.type].aida&&(e.from===nid||e.to===nid)));
     }
     g.style.opacity=vis?'1':'0.12';
   });
@@ -488,7 +551,7 @@ function applyOpacity(nodeIds=null, aidaOnly=false){
     const edge=EDGES.find(e=>e.id===eid);
     let vis=true;
     if(nodeIds) vis=edge&&(nodeIds.has(edge.from)||nodeIds.has(edge.to));
-    if(aidaOnly) vis=edge&&ES[edge.type].aida;
+    if(aidaOnly) vis=edge&&T.ES[edge.type].aida;
     path.style.opacity=vis?'1':'0.05';
   });
 }
@@ -501,24 +564,21 @@ function resetOpacity(){
 function onHover(node,g,ev){
   g.querySelector('.nr').setAttribute('stroke-width',node.isAida?2:1.2);
   g.querySelector('.nr').style.filter='drop-shadow(0 0 6px rgba(59,108,211,.3))';
-
   const d=DD[node.id]||{desc:'',flows:[]};
-  const s=CS[node.cat];
   let html=`<div class="tt-name">${node.label}</div>`;
   if(node.sub) html+=`<div class="tt-sub">${node.sub}</div>`;
   if(d.desc) html+=`<div class="tt-desc">${d.desc}</div>`;
   if(d.flows&&d.flows.length){
     html+=`<div class="tt-flows">`;
     d.flows.forEach(f=>{
-      html+=`<div class="tt-flow"><div class="tt-dot" style="background:${f.c}"></div>${f.l}</div>`;
+      html+=`<div class="tt-flow"><div class="tt-dot" style="background:${dotColor(f.c)}"></div>${f.l}</div>`;
     });
     html+=`</div>`;
   }
   tt.innerHTML=html;
   moveTooltip(ev);
   tt.classList.add('show');
-
-  if(!focusOn && !selNode) applyOpacity(connected(node.id));
+  if(!focusOn&&!selNode) applyOpacity(connected(node.id));
 }
 
 function moveTooltip(ev){
@@ -538,7 +598,7 @@ function onLeave(node,g){
   g.querySelector('.nr').setAttribute('stroke-width',node.isAida?1.2:0.5);
   g.querySelector('.nr').style.filter='none';
   tt.classList.remove('show');
-  if(!focusOn && !selNode) resetOpacity();
+  if(!focusOn&&!selNode) resetOpacity();
 }
 
 function onNodeClick(node){
@@ -558,7 +618,6 @@ svg.addEventListener('click',e=>{
   }
 });
 
-/* focus button */
 document.getElementById('btnF').addEventListener('click',function(){
   focusOn=!focusOn;
   this.classList.toggle('on',focusOn);
@@ -567,7 +626,6 @@ document.getElementById('btnF').addEventListener('click',function(){
   if(focusOn) applyOpacity(null,true); else resetOpacity();
 });
 
-/* pause button */
 document.getElementById('btnP').addEventListener('click',function(){
   paused=!paused;
   this.classList.toggle('on',paused);
@@ -577,21 +635,52 @@ document.getElementById('btnP').addEventListener('click',function(){
   });
 });
 
-svg.addEventListener('mouseleave',()=>{
-  tt.classList.remove('show');
+svg.addEventListener('mouseleave',()=>tt.classList.remove('show'));
+
+/* ═══════════════════════════════════════════════════
+   THEME SWITCHING
+   Priority: URL param > postMessage > prefers-color-scheme
+═══════════════════════════════════════════════════ */
+function setTheme(name){
+  T=name==='light'?LIGHT:DARK;
+  document.documentElement.dataset.theme=name;
+  render();
+  /* restore any active focus state after re-render */
+  if(selNode) applyOpacity(connected(selNode.id));
+  else if(focusOn) applyOpacity(null,true);
+}
+
+function detectTheme(){
+  const p=new URLSearchParams(location.search).get('theme');
+  if(p==='light'||p==='dark') return p;
+  return window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';
+}
+
+/* initial render */
+setTheme(detectTheme());
+
+/* OS preference changes (only when no URL override is present) */
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',e=>{
+  if(!new URLSearchParams(location.search).has('theme')) setTheme(e.matches?'dark':'light');
 });
 
-/* ── INIT ── */
-render();
+/* postMessage from Framer parent:
+   send window.postMessage({type:'theme', value:'light'}, '*') from a Framer code component */
+window.addEventListener('message',e=>{
+  const d=e.data;
+  if(!d) return;
+  const v=d.value||d.colorScheme;
+  if((d.type==='theme'||d.colorScheme)&&(v==='light'||v==='dark')) setTheme(v);
+});
 </script>
-  <script>
-// Tell parent frame our height so it can resize
+
+<script>
 function postHeight(){
-  const h = document.querySelector('.card,.map-wrap').offsetHeight;
+  const h=document.querySelector('.map-wrap').offsetHeight;
   window.parent.postMessage({type:'resize',height:h},'*');
 }
-window.addEventListener('load', postHeight);
-new ResizeObserver(postHeight).observe(document.querySelector('.card,.map-wrap'));
+window.addEventListener('load',postHeight);
+new ResizeObserver(postHeight).observe(document.querySelector('.map-wrap'));
 </script>
 </body>
 </html>
