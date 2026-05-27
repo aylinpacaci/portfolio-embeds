@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: transparent; -webkit-font-smoothing: antialiased; }
+
+  .chart-card {
+    background: #fff;
+    border: 0.5px solid #cfd4da;
+    border-radius: 4px;
+    padding: 20px 20px 16px;
+    max-width: 560px;
+    position: relative;
+  }
+
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .chart-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #252c34;
+  }
+
+  .chart-legend {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .chart-legend span {
+    font-size: 11px;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .chart-legend span::before {
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+  }
+
+  .lg-1::before { background: #0a2840; }
+  .lg-2::before { background: #013e77; }
+  .lg-3::before { background: #00b5ae; }
+
+  /* ── Bar animation ── */
+  .bar-rect {
+    transform-origin: bottom;
+    transform: scaleY(0);
+    animation: growUp 0.5s cubic-bezier(0.2, 0, 0, 1) forwards;
+    transition: opacity 0.15s;
+    cursor: pointer;
+  }
+
+  .bg-1 .bar-rect { animation-delay: 0.2s; }
+  .bg-2 .bar-rect { animation-delay: 0.4s; }
+  .bg-3 .bar-rect { animation-delay: 0.6s; }
+
+  @keyframes growUp { to { transform: scaleY(1); } }
+
+  .bar-group {
+    opacity: 0;
+    animation: barIn 0.4s cubic-bezier(0.2, 0, 0, 1) forwards;
+  }
+  .bg-1 { animation-delay: 0.15s; }
+  .bg-2 { animation-delay: 0.35s; }
+  .bg-3 { animation-delay: 0.55s; }
+  @keyframes barIn { to { opacity: 1; } }
+
+  /* ── Bar hover ── */
+  .bar-rect:hover {
+    opacity: 0.85;
+  }
+
+  /* Dim siblings when one bar is hovered */
+  .bar-group:hover .bar-rect:not(:hover) {
+    opacity: 0.4;
+  }
+
+  /* ── Tooltip ── */
+  .tooltip {
+    position: absolute;
+    background: #252c34;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    line-height: 1.5;
+    padding: 8px 12px;
+    border-radius: 4px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.15s, transform 0.15s;
+    z-index: 10;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(37,44,52,0.12);
+  }
+
+  .tooltip.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .tooltip-label {
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+
+  .tooltip-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tooltip-swatch {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .tooltip-val {
+    font-weight: 400;
+    color: #cfd4da;
+    margin-left: auto;
+    padding-left: 12px;
+  }
+
+  /* ── Period separator gaps (visual cue) ── */
+  .period-gap {
+    fill: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="chart-card" id="chartCard">
+  <div class="chart-header">
+    <div class="chart-title">Dimension A · by reporting period</div>
+    <div class="chart-legend">
+      <span class="lg-1">Series 1</span>
+      <span class="lg-2">Series 2</span>
+      <span class="lg-3">Series 3</span>
+    </div>
+  </div>
+
+  <svg id="chartSvg" viewBox="0 0 500 240" preserveAspectRatio="xMidYMid meet" style="width:100%;display:block;">
+    <!-- Grid lines -->
+    <line x1="44" y1="185" x2="476" y2="185" stroke="#e9ecef" stroke-width="0.5"/>
+    <line x1="44" y1="144" x2="476" y2="144" stroke="#f1f3f4" stroke-width="0.5"/>
+    <line x1="44" y1="103" x2="476" y2="103" stroke="#f1f3f4" stroke-width="0.5"/>
+    <line x1="44" y1="62"  x2="476" y2="62"  stroke="#f1f3f4" stroke-width="0.5"/>
+    <line x1="44" y1="21"  x2="476" y2="21"  stroke="#f1f3f4" stroke-width="0.5"/>
+
+    <!-- Y labels -->
+    <text x="38" y="188" font-size="10" fill="#adb5bd" text-anchor="end" font-family="Inter">0</text>
+    <text x="38" y="147" font-size="10" fill="#adb5bd" text-anchor="end" font-family="Inter">25</text>
+    <text x="38" y="106" font-size="10" fill="#adb5bd" text-anchor="end" font-family="Inter">50</text>
+    <text x="38" y="65"  font-size="10" fill="#adb5bd" text-anchor="end" font-family="Inter">75</text>
+    <text x="38" y="24"  font-size="10" fill="#adb5bd" text-anchor="end" font-family="Inter">100</text>
+
+    <!--
+      3 clusters.
+      Cluster 1 center: ~126    Cluster 2 center: ~268    Cluster 3 center: ~410
+      Bar width: 36px, gap between bars: 4px
+      Cluster width = 36+4+36+4+36 = 116
+      So bars at: center-58, center-18, center+22
+    -->
+
+    <!-- ── Period 1: 2016–2019 ── -->
+    <g class="bar-group bg-1">
+      <text x="126" y="218" font-size="11" fill="#252c34" text-anchor="middle" font-family="Inter" font-weight="700">2016–2019</text>
+      <text x="126" y="230" font-size="9" fill="#adb5bd" text-anchor="middle" font-family="Inter">Period 1</text>
+
+      <!-- S1: 89 → h=146, y=39 -->
+      <rect class="bar-rect" x="68" y="39" width="36" height="146" rx="2" fill="#0a2840"
+        data-period="2016–2019" data-series="Series 1" data-val="89"/>
+      <!-- S2: 68 → h=112, y=73 -->
+      <rect class="bar-rect" x="108" y="73" width="36" height="112" rx="2" fill="#013e77"
+        data-period="2016–2019" data-series="Series 2" data-val="68"/>
+      <!-- S3: 94 → h=154, y=31 -->
+      <rect class="bar-rect" x="148" y="31" width="36" height="154" rx="2" fill="#00b5ae"
+        data-period="2016–2019" data-series="Series 3" data-val="94"/>
+    </g>
+
+    <!-- ── Period 2: 2020–2022 ── -->
+    <g class="bar-group bg-2">
+      <text x="268" y="218" font-size="11" fill="#252c34" text-anchor="middle" font-family="Inter" font-weight="700">2020–2022</text>
+      <text x="268" y="230" font-size="9" fill="#adb5bd" text-anchor="middle" font-family="Inter">Period 2</text>
+
+      <!-- S1: 65 → h=107, y=78 -->
+      <rect class="bar-rect" x="210" y="78" width="36" height="107" rx="2" fill="#0a2840"
+        data-period="2020–2022" data-series="Series 1" data-val="65"/>
+      <!-- S2: 47 → h=77, y=108 -->
+      <rect class="bar-rect" x="250" y="108" width="36" height="77" rx="2" fill="#013e77"
+        data-period="2020–2022" data-series="Series 2" data-val="47"/>
+      <!-- S3: 75 → h=123, y=62 -->
+      <rect class="bar-rect" x="290" y="62" width="36" height="123" rx="2" fill="#00b5ae"
+        data-period="2020–2022" data-series="Series 3" data-val="75"/>
+    </g>
+
+    <!-- ── Period 3: 2023–2024 ── -->
+    <g class="bar-group bg-3">
+      <text x="410" y="218" font-size="11" fill="#252c34" text-anchor="middle" font-family="Inter" font-weight="700">2023–2024</text>
+      <text x="410" y="230" font-size="9" fill="#adb5bd" text-anchor="middle" font-family="Inter">Period 3</text>
+
+      <!-- S1: 81 → h=133, y=52 -->
+      <rect class="bar-rect" x="352" y="52" width="36" height="133" rx="2" fill="#0a2840"
+        data-period="2023–2024" data-series="Series 1" data-val="81"/>
+      <!-- S2: 63 → h=103, y=82 -->
+      <rect class="bar-rect" x="392" y="82" width="36" height="103" rx="2" fill="#013e77"
+        data-period="2023–2024" data-series="Series 2" data-val="63"/>
+      <!-- S3: 88 → h=144, y=41 -->
+      <rect class="bar-rect" x="432" y="41" width="36" height="144" rx="2" fill="#00b5ae"
+        data-period="2023–2024" data-series="Series 3" data-val="88"/>
+    </g>
+  </svg>
+
+  <!-- Tooltip -->
+  <div class="tooltip" id="tooltip">
+    <div class="tooltip-label" id="ttLabel"></div>
+    <div class="tooltip-row">
+      <div class="tooltip-swatch" id="ttSwatch"></div>
+      <span id="ttSeries"></span>
+      <span class="tooltip-val" id="ttVal"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const card = document.getElementById('chartCard');
+  const svg = document.getElementById('chartSvg');
+  const tooltip = document.getElementById('tooltip');
+  const ttLabel = document.getElementById('ttLabel');
+  const ttSeries = document.getElementById('ttSeries');
+  const ttVal = document.getElementById('ttVal');
+  const ttSwatch = document.getElementById('ttSwatch');
+  const bars = svg.querySelectorAll('.bar-rect');
+
+  const colorMap = {
+    'Series 1': '#0a2840',
+    'Series 2': '#013e77',
+    'Series 3': '#00b5ae'
+  };
+
+  function svgToCard(svgX, svgY) {
+    const pt = svg.createSVGPoint();
+    pt.x = svgX; pt.y = svgY;
+    const ctm = svg.getScreenCTM();
+    const cardRect = card.getBoundingClientRect();
+    const screenPt = pt.matrixTransform(ctm);
+    return { x: screenPt.x - cardRect.left, y: screenPt.y - cardRect.top };
+  }
+
+  bars.forEach(bar => {
+    bar.addEventListener('mouseenter', () => {
+      const period = bar.dataset.period;
+      const series = bar.dataset.series;
+      const val = bar.dataset.val;
+
+      ttLabel.textContent = period;
+      ttSeries.textContent = series;
+      ttVal.textContent = val;
+      ttSwatch.style.background = colorMap[series] || '#cfd4da';
+
+      const bx = parseFloat(bar.getAttribute('x'));
+      const by = parseFloat(bar.getAttribute('y'));
+      const bw = parseFloat(bar.getAttribute('width'));
+
+      const pos = svgToCard(bx + bw + 8, by);
+      tooltip.style.left = pos.x + 'px';
+      tooltip.style.top = pos.y + 'px';
+      tooltip.classList.add('visible');
+    });
+
+    bar.addEventListener('mouseleave', () => {
+      tooltip.classList.remove('visible');
+    });
+  });
+
+  card.addEventListener('mouseleave', () => {
+    tooltip.classList.remove('visible');
+  });
+})();
+</script>
+</body>
+</html>
