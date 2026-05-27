@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: transparent; -webkit-font-smoothing: antialiased; }
+
+  .chart-card {
+    background: #fff;
+    border: 0.5px solid #cfd4da;
+    border-radius: 4px;
+    padding: 20px 20px 16px;
+    max-width: 560px;
+    position: relative;
+  }
+
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .chart-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #252c34;
+  }
+
+  .chart-legend {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .chart-legend span {
+    font-size: 11px;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .chart-legend span::before {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 2.5px;
+    border-radius: 1px;
+  }
+
+  .lg-1::before { background: #0a2840; }
+  .lg-2::before { background: #013e77; }
+  .lg-3::before { background: #00b5ae; }
+
+  /* ── Line draw animation ── */
+  .line-path {
+    stroke-dasharray: 1200;
+    stroke-dashoffset: 1200;
+    animation: draw 1.5s cubic-bezier(0.2, 0, 0, 1) forwards;
+  }
+  .lp-1 { animation-delay: 0.1s; }
+  .lp-2 { animation-delay: 0.25s; }
+  .lp-3 { animation-delay: 0.4s; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+
+  /* ── Fade in for annotation elements ── */
+  .fade-in { opacity: 0; animation: fadeIn 0.4s ease forwards; }
+  .fd-1 { animation-delay: 1.2s; }
+  .fd-2 { animation-delay: 1.45s; }
+  @keyframes fadeIn { to { opacity: 1; } }
+
+  /* ── Hover hit areas on data points ── */
+  .hit-dot {
+    fill: transparent;
+    cursor: pointer;
+    transition: fill 0.15s;
+  }
+  .hit-dot:hover {
+    fill: rgba(0,0,0,0.06);
+  }
+
+  /* Visible dot on hover */
+  .vis-dot {
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .hit-dot:hover + .vis-dot,
+  .hit-dot:hover ~ .vis-dot {
+    opacity: 1;
+  }
+
+  /* ── Tooltip (HTML overlay) ── */
+  .tooltip {
+    position: absolute;
+    background: #252c34;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    line-height: 1.5;
+    padding: 8px 12px;
+    border-radius: 4px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.15s, transform 0.15s;
+    z-index: 10;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(37,44,52,0.12);
+  }
+
+  .tooltip.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .tooltip-label {
+    font-weight: 700;
+    margin-bottom: 2px;
+    color: #fff;
+  }
+
+  .tooltip-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tooltip-swatch {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .tooltip-val {
+    font-weight: 400;
+    color: #cfd4da;
+    margin-left: auto;
+    padding-left: 12px;
+  }
+
+  /* ── Methodology annotation box ── */
+  .method-box {
+    transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1), filter 0.25s;
+    cursor: default;
+  }
+
+  .method-box:hover {
+    transform: translate(0, -2px);
+    filter: drop-shadow(0 3px 8px rgba(234,21,65,0.15));
+  }
+
+  /* ── Crosshair line ── */
+  .crosshair {
+    stroke: #cfd4da;
+    stroke-width: 0.5;
+    stroke-dasharray: 3 2;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+</style>
+</head>
+<body>
+
+<div class="chart-card" id="chartCard">
+  <div class="chart-header">
+    <div class="chart-title">Dimension A · 2016–2024</div>
+    <div class="chart-legend">
+      <span class="lg-1">Series 1</span>
+      <span class="lg-2">Series 2</span>
+      <span class="lg-3">Series 3</span>
+    </div>
+  </div>
+
+  <svg id="chartSvg" viewBox="0 0 500 260" preserveAspectRatio="xMidYMid meet" style="width:100%;display:block;">
+    <!-- Grid lines -->
+    <line x1="44" y1="185" x2="476" y2="185" stroke="#e9ecef" stroke-width="0.5"/>
+    <line x1="44" y1="144" x2="476" y2="144" stroke="#f1f3f4" stroke-width="0.5"/>
+    <line x1="44" y1="103" x2="476" y2="103" stroke="#f1f3f4" stroke-width="0.5"/>
+    <line x1="44" y1="62"  x2="476" y2="62"  stroke="#f1f3f4" stroke-width="0.5"/>
+    <line x1="44" y1="21"  x2="476" y2="21"  stroke="#f1f3f4" stroke-width="0.5"/>
+
+    <!-- Y labels -->
+    <text x="38" y="188" font-size="10" fill="#adb5bd" text-anchor="end" font-family="Inter">0</text>
+    <text x="38" y="147" font-size="10" fill="#adb5bd" text-anchor="end" font-family="Inter">25</text>
+    <text x="38" y="106" font-size="10" fill="#adb5bd" text-anchor="end" font-family="Inter">50</text>
+    <text x="38" y="65"  font-size="10" fill="#adb5bd" text-anchor="end" font-family="Inter">75</text>
+    <text x="38" y="24"  font-size="10" fill="#adb5bd" text-anchor="end" font-family="Inter">100</text>
+
+    <!-- X labels -->
+    <text x="44"  y="200" font-size="10" fill="#adb5bd" text-anchor="start"  font-family="Inter">2016</text>
+    <text x="98"  y="200" font-size="10" fill="#adb5bd" text-anchor="middle" font-family="Inter">2017</text>
+    <text x="152" y="200" font-size="10" fill="#adb5bd" text-anchor="middle" font-family="Inter">2018</text>
+    <text x="206" y="200" font-size="10" fill="#adb5bd" text-anchor="middle" font-family="Inter">2019</text>
+    <text x="260" y="200" font-size="10" fill="#adb5bd" text-anchor="middle" font-family="Inter">2020</text>
+    <text x="314" y="200" font-size="10" fill="#adb5bd" text-anchor="middle" font-family="Inter">2021</text>
+    <text x="368" y="200" font-size="10" fill="#adb5bd" text-anchor="middle" font-family="Inter">2022</text>
+    <text x="422" y="200" font-size="10" fill="#adb5bd" text-anchor="middle" font-family="Inter">2023</text>
+    <text x="476" y="200" font-size="10" fill="#adb5bd" text-anchor="end"    font-family="Inter">2024</text>
+
+    <!-- Crosshair (vertical, follows hover) -->
+    <line class="crosshair" id="crosshair" x1="0" y1="21" x2="0" y2="185"/>
+
+    <!-- Series 3 (teal) -->
+    <polyline class="line-path lp-3" fill="none" stroke="#00b5ae" stroke-width="2" stroke-linejoin="round"
+      points="44,30 98,27 152,25 206,23 260,72 314,62 368,50 422,38 476,30"/>
+    <!-- Series 1 (dark navy) -->
+    <polyline class="line-path lp-1" fill="none" stroke="#0a2840" stroke-width="2" stroke-linejoin="round"
+      points="44,42 98,38 152,34 206,32 260,88 314,78 368,68 422,56 476,46"/>
+    <!-- Series 2 (mid blue) -->
+    <polyline class="line-path lp-2" fill="none" stroke="#013e77" stroke-width="2" stroke-linejoin="round"
+      points="44,74 98,70 152,66 206,62 260,118 314,108 368,96 422,86 476,78"/>
+
+    <!-- ── Hit areas + visible dots per data point ── -->
+    <!-- 2016 -->
+    <circle class="hit-dot" cx="44" cy="42" r="14" data-year="2016" data-s1="89" data-s2="68" data-s3="94"/>
+    <circle class="vis-dot" cx="44" cy="30" r="3" fill="#00b5ae"/>
+    <circle class="vis-dot" cx="44" cy="42" r="3" fill="#0a2840"/>
+    <circle class="vis-dot" cx="44" cy="74" r="3" fill="#013e77"/>
+    <!-- 2017 -->
+    <circle class="hit-dot" cx="98" cy="38" r="14" data-year="2017" data-s1="90" data-s2="69" data-s3="95"/>
+    <circle class="vis-dot" cx="98" cy="27" r="3" fill="#00b5ae"/>
+    <circle class="vis-dot" cx="98" cy="38" r="3" fill="#0a2840"/>
+    <circle class="vis-dot" cx="98" cy="70" r="3" fill="#013e77"/>
+    <!-- 2018 -->
+    <circle class="hit-dot" cx="152" cy="34" r="14" data-year="2018" data-s1="91" data-s2="70" data-s3="96"/>
+    <circle class="vis-dot" cx="152" cy="25" r="3" fill="#00b5ae"/>
+    <circle class="vis-dot" cx="152" cy="34" r="3" fill="#0a2840"/>
+    <circle class="vis-dot" cx="152" cy="66" r="3" fill="#013e77"/>
+    <!-- 2019 -->
+    <circle class="hit-dot" cx="206" cy="32" r="14" data-year="2019" data-s1="92" data-s2="71" data-s3="96"/>
+    <circle class="vis-dot" cx="206" cy="23" r="3" fill="#00b5ae"/>
+    <circle class="vis-dot" cx="206" cy="32" r="3" fill="#0a2840"/>
+    <circle class="vis-dot" cx="206" cy="62" r="3" fill="#013e77"/>
+    <!-- 2020 -->
+    <circle class="hit-dot" cx="260" cy="88" r="14" data-year="2020" data-s1="59" data-s2="41" data-s3="69"/>
+    <circle class="vis-dot" cx="260" cy="72" r="3" fill="#00b5ae"/>
+    <circle class="vis-dot" cx="260" cy="88" r="3" fill="#0a2840"/>
+    <circle class="vis-dot" cx="260" cy="118" r="3" fill="#013e77"/>
+    <!-- 2021 -->
+    <circle class="hit-dot" cx="314" cy="78" r="14" data-year="2021" data-s1="65" data-s2="47" data-s3="75"/>
+    <circle class="vis-dot" cx="314" cy="62" r="3" fill="#00b5ae"/>
+    <circle class="vis-dot" cx="314" cy="78" r="3" fill="#0a2840"/>
+    <circle class="vis-dot" cx="314" cy="108" r="3" fill="#013e77"/>
+    <!-- 2022 -->
+    <circle class="hit-dot" cx="368" cy="68" r="14" data-year="2022" data-s1="71" data-s2="54" data-s3="82"/>
+    <circle class="vis-dot" cx="368" cy="50" r="3" fill="#00b5ae"/>
+    <circle class="vis-dot" cx="368" cy="68" r="3" fill="#0a2840"/>
+    <circle class="vis-dot" cx="368" cy="96" r="3" fill="#013e77"/>
+    <!-- 2023 -->
+    <circle class="hit-dot" cx="422" cy="56" r="14" data-year="2023" data-s1="78" data-s2="60" data-s3="89"/>
+    <circle class="vis-dot" cx="422" cy="38" r="3" fill="#00b5ae"/>
+    <circle class="vis-dot" cx="422" cy="56" r="3" fill="#0a2840"/>
+    <circle class="vis-dot" cx="422" cy="86" r="3" fill="#013e77"/>
+    <!-- 2024 -->
+    <circle class="hit-dot" cx="476" cy="46" r="14" data-year="2024" data-s1="84" data-s2="66" data-s3="92"/>
+    <circle class="vis-dot" cx="476" cy="30" r="3" fill="#00b5ae"/>
+    <circle class="vis-dot" cx="476" cy="46" r="3" fill="#0a2840"/>
+    <circle class="vis-dot" cx="476" cy="78" r="3" fill="#013e77"/>
+
+    <!-- ── Methodology break ── -->
+
+    <!-- Dashed vertical -->
+    <line class="fade-in fd-1" x1="233" y1="14" x2="233" y2="185" stroke="#ea1541" stroke-width="0.75" stroke-dasharray="4 3"/>
+
+    <!-- Annotation box — positioned below the chart area, proper spacing -->
+    <g class="fade-in fd-2 method-box">
+      <rect x="238" y="210" width="248" height="46" rx="4" fill="#fff" stroke="#ea1541" stroke-width="0.5"/>
+
+      <!-- Red left accent bar -->
+      <rect x="238" y="210" width="3" height="46" rx="1.5" fill="#ea1541"/>
+
+      <!-- Title row -->
+      <text x="252" y="227" font-size="11" fill="#ea1541" font-family="Inter" font-weight="700">Methodology changed here</text>
+
+      <!-- Description -->
+      <text x="252" y="244" font-size="10" fill="#495057" font-family="Inter" font-weight="400">
+        <tspan>The dip is a reclassification — not a real decline.</tspan>
+      </text>
+
+      <!-- Connecting line from break to box -->
+      <line x1="233" y1="200" x2="233" y2="210" stroke="#ea1541" stroke-width="0.5" stroke-dasharray="2 2"/>
+    </g>
+  </svg>
+
+  <!-- Tooltip (HTML, positioned via JS) -->
+  <div class="tooltip" id="tooltip">
+    <div class="tooltip-label" id="ttLabel"></div>
+    <div class="tooltip-row"><div class="tooltip-swatch" style="background:#0a2840"></div> Series 1 <span class="tooltip-val" id="ttS1"></span></div>
+    <div class="tooltip-row"><div class="tooltip-swatch" style="background:#013e77"></div> Series 2 <span class="tooltip-val" id="ttS2"></span></div>
+    <div class="tooltip-row"><div class="tooltip-swatch" style="background:#00b5ae"></div> Series 3 <span class="tooltip-val" id="ttS3"></span></div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const card = document.getElementById('chartCard');
+  const svg = document.getElementById('chartSvg');
+  const tooltip = document.getElementById('tooltip');
+  const crosshair = document.getElementById('crosshair');
+  const ttLabel = document.getElementById('ttLabel');
+  const ttS1 = document.getElementById('ttS1');
+  const ttS2 = document.getElementById('ttS2');
+  const ttS3 = document.getElementById('ttS3');
+  const dots = svg.querySelectorAll('.hit-dot');
+
+  function svgToCard(svgX, svgY) {
+    const pt = svg.createSVGPoint();
+    pt.x = svgX; pt.y = svgY;
+    const ctm = svg.getScreenCTM();
+    const cardRect = card.getBoundingClientRect();
+    const screenPt = pt.matrixTransform(ctm);
+    return { x: screenPt.x - cardRect.left, y: screenPt.y - cardRect.top };
+  }
+
+  dots.forEach(dot => {
+    const cx = parseFloat(dot.getAttribute('cx'));
+
+    dot.addEventListener('mouseenter', () => {
+      const year = dot.dataset.year;
+      const s1 = dot.dataset.s1;
+      const s2 = dot.dataset.s2;
+      const s3 = dot.dataset.s3;
+
+      ttLabel.textContent = year;
+      ttS1.textContent = s1;
+      ttS2.textContent = s2;
+      ttS3.textContent = s3;
+
+      // Position tooltip
+      const pos = svgToCard(cx, 21);
+      tooltip.style.left = (pos.x + 12) + 'px';
+      tooltip.style.top = (pos.y) + 'px';
+      tooltip.classList.add('visible');
+
+      // Show crosshair
+      crosshair.setAttribute('x1', cx);
+      crosshair.setAttribute('x2', cx);
+      crosshair.style.opacity = '1';
+
+      // Show dots for this year
+      let sib = dot.nextElementSibling;
+      while (sib && sib.classList.contains('vis-dot')) {
+        sib.style.opacity = '1';
+        sib = sib.nextElementSibling;
+      }
+    });
+
+    dot.addEventListener('mouseleave', () => {
+      tooltip.classList.remove('visible');
+      crosshair.style.opacity = '0';
+
+      let sib = dot.nextElementSibling;
+      while (sib && sib.classList.contains('vis-dot')) {
+        sib.style.opacity = '0';
+        sib = sib.nextElementSibling;
+      }
+    });
+  });
+
+  // Hide tooltip if mouse leaves chart entirely
+  card.addEventListener('mouseleave', () => {
+    tooltip.classList.remove('visible');
+    crosshair.style.opacity = '0';
+    svg.querySelectorAll('.vis-dot').forEach(d => d.style.opacity = '0');
+  });
+})();
+</script>
+</body>
+</html>
