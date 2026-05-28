@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    background: #fff;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  .eco-wrap {
+    width: 100%;
+    height: 100%;
+    min-height: 580px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .eco-svg {
+    width: 100%;
+    flex: 1;
+    display: block;
+    min-height: 0;
+  }
+
+  .node { cursor: pointer; }
+  .node:hover .node-circle {
+    filter: drop-shadow(0 3px 10px rgba(10,40,64,0.3));
+  }
+
+  .pulse-ring {
+    animation: pulse 2.8s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.15; }
+    50% { opacity: 0; }
+  }
+
+  .fade-up {
+    opacity: 0;
+    animation: fadeUp 0.5s cubic-bezier(0.2, 0, 0, 1) forwards;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .eco-tooltip {
+    position: absolute;
+    background: #252c34;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    padding: 12px 16px;
+    border-radius: 6px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.2s, transform 0.2s;
+    z-index: 20;
+    max-width: 240px;
+    box-shadow: 0 6px 20px rgba(37,44,52,0.2);
+  }
+  .eco-tooltip.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .eco-tooltip-cat {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #00b5ae;
+    margin-bottom: 4px;
+  }
+  .eco-tooltip-title {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .eco-tooltip-body {
+    font-size: 12px;
+    color: #cfd4da;
+    line-height: 1.55;
+  }
+
+  /* Legend sits right below the SVG */
+  .legend {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 0 10px;
+    flex-shrink: 0;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 400;
+    color: #495057;
+    white-space: nowrap;
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="eco-wrap" id="ecoWrap">
+  <svg class="eco-svg" id="ecoSvg" viewBox="0 0 960 660" preserveAspectRatio="xMidYMid meet">
+
+    <!-- ═══ RING FILLS ═══ -->
+    <path d="M 480,640 m -340,0 a 340,340 0 0,1 680,0" fill="#f4f7fa" class="fade-up" style="animation-delay:0.05s"/>
+    <path d="M 480,640 m -245,0 a 245,245 0 0,1 490,0" fill="#eaf1f8" class="fade-up" style="animation-delay:0.1s"/>
+    <path d="M 480,640 m -150,0 a 150,150 0 0,1 300,0" fill="#dde9f3" class="fade-up" style="animation-delay:0.15s"/>
+
+    <!-- ═══ RING BORDERS ═══ -->
+    <path d="M 480,640 m -340,0 a 340,340 0 0,1 680,0" fill="none" stroke="#c3d9ec" stroke-width="1" class="fade-up" style="animation-delay:0.2s"/>
+    <path d="M 480,640 m -245,0 a 245,245 0 0,1 490,0" fill="none" stroke="#c3d9ec" stroke-width="1" class="fade-up" style="animation-delay:0.25s"/>
+    <path d="M 480,640 m -150,0 a 150,150 0 0,1 300,0" fill="none" stroke="#c3d9ec" stroke-width="1" class="fade-up" style="animation-delay:0.3s"/>
+
+    <!-- ═══ BASE LINE ═══ -->
+    <line x1="50" y1="640" x2="910" y2="640" stroke="#252c34" stroke-width="2" class="fade-up" style="animation-delay:0.35s"/>
+
+    <!-- ═══ CONNECTIONS ═══ -->
+    <line x1="480" y1="590" x2="480" y2="510" stroke="#98b8d4" stroke-width="1.5" class="fade-up" style="animation-delay:0.5s"/>
+    <line x1="435" y1="600" x2="345" y2="530" stroke="#98b8d4" stroke-width="1.5" class="fade-up" style="animation-delay:0.52s"/>
+    <line x1="525" y1="600" x2="615" y2="530" stroke="#98b8d4" stroke-width="1.5" class="fade-up" style="animation-delay:0.54s"/>
+
+    <line x1="445" y1="475" x2="320" y2="415" stroke="#b8d0e4" stroke-width="1" stroke-dasharray="6 4" class="fade-up" style="animation-delay:0.6s"/>
+    <line x1="515" y1="475" x2="640" y2="415" stroke="#b8d0e4" stroke-width="1" stroke-dasharray="6 4" class="fade-up" style="animation-delay:0.62s"/>
+    <line x1="310" y1="510" x2="215" y2="440" stroke="#b8d0e4" stroke-width="1" stroke-dasharray="6 4" class="fade-up" style="animation-delay:0.64s"/>
+    <line x1="650" y1="510" x2="745" y2="440" stroke="#b8d0e4" stroke-width="1" stroke-dasharray="6 4" class="fade-up" style="animation-delay:0.66s"/>
+
+    <line x1="195" y1="418" x2="150" y2="350" stroke="#cfdde9" stroke-width="1" stroke-dasharray="4 4" class="fade-up" style="animation-delay:0.7s"/>
+    <line x1="300" y1="395" x2="275" y2="325" stroke="#cfdde9" stroke-width="1" stroke-dasharray="4 4" class="fade-up" style="animation-delay:0.72s"/>
+    <line x1="660" y1="395" x2="685" y2="325" stroke="#cfdde9" stroke-width="1" stroke-dasharray="4 4" class="fade-up" style="animation-delay:0.74s"/>
+    <line x1="765" y1="418" x2="810" y2="350" stroke="#cfdde9" stroke-width="1" stroke-dasharray="4 4" class="fade-up" style="animation-delay:0.76s"/>
+
+    <!-- ═══ EDGE LABELS ═══ -->
+    <g class="fade-up" style="animation-delay:1s">
+      <rect x="490" y="540" width="92" height="20" rx="4" fill="#fff" fill-opacity="0.9"/>
+      <text x="536" y="554" font-size="12" fill="#495057" font-family="Inter" font-style="italic" text-anchor="middle">aggregation</text>
+    </g>
+    <g class="fade-up" style="animation-delay:1.02s">
+      <rect x="345" y="560" width="74" height="20" rx="4" fill="#fff" fill-opacity="0.9"/>
+      <text x="382" y="574" font-size="12" fill="#495057" font-family="Inter" font-style="italic" text-anchor="middle">feeds data</text>
+    </g>
+    <g class="fade-up" style="animation-delay:1.04s">
+      <rect x="539" y="560" width="84" height="20" rx="4" fill="#fff" fill-opacity="0.9"/>
+      <text x="581" y="574" font-size="12" fill="#495057" font-family="Inter" font-style="italic" text-anchor="middle">bulk export</text>
+    </g>
+
+    <!-- ═══ SECTOR LABELS — positioned next to outer ring nodes ═══ -->
+    <!-- PROCUREMENT — left of Wambo, same y-height -->
+    <text x="68" y="398" font-size="13" font-weight="800" fill="#252c34" font-family="Inter" letter-spacing="0.1em" class="fade-up" style="animation-delay:0.9s">PROCUREMENT</text>
+    <!-- EVIDENCE — right of Archive, same y-height -->
+    <text x="848" y="350" font-size="13" font-weight="800" fill="#252c34" font-family="Inter" letter-spacing="0.1em" class="fade-up" style="animation-delay:0.92s">EVIDENCE</text>
+    <!-- INFRASTRUCTURE — far left, at baseline level but not overlapping the API node -->
+    <text x="68" y="620" font-size="13" font-weight="800" fill="#252c34" font-family="Inter" letter-spacing="0.1em" class="fade-up" style="animation-delay:0.94s">INFRASTRUCTURE</text>
+    <!-- GOVERNANCE — far right, at baseline level -->
+    <text x="770" y="620" font-size="13" font-weight="800" fill="#252c34" font-family="Inter" letter-spacing="0.1em" class="fade-up" style="animation-delay:0.96s">GOVERNANCE</text>
+
+    <!-- ═══ CENTER: Data Explorer (half-circle on baseline) ═══ -->
+    <g class="fade-up" style="animation-delay:0.38s">
+      <path class="pulse-ring" d="M 415,640 a 65,65 0 0,1 130,0" fill="#013e77"/>
+    </g>
+    <g class="node fade-up" style="animation-delay:0.42s"
+       data-title="Global Fund Data Explorer"
+       data-cat="The Transparency Bridge"
+       data-desc="Translates raw financial ledgers and programmatic health data into intuitive, regional, and disease-specific narratives. The platform I lead design on."
+       data-cx="480" data-cy="640" data-r="55">
+      <path class="node-circle" d="M 425,640 a 55,55 0 0,1 110,0 Z" fill="#013e77"/>
+      <text x="480" y="622" font-size="14" font-weight="700" fill="#fff" text-anchor="middle" font-family="Inter">Data Explorer</text>
+    </g>
+
+    <!-- ═══ INNER RING ═══ -->
+    <g class="node fade-up" style="animation-delay:0.5s"
+       data-title="Data API Middleware"
+       data-cat="Infrastructure"
+       data-desc="Aggregation layer between the Data Service and the Explorer. Handles query composition, caching, and data transformation.">
+      <circle class="node-circle" cx="480" cy="485" r="36" fill="#0a2840"/>
+      <text x="480" y="480" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="Inter">API</text>
+      <text x="480" y="496" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="Inter">Middleware</text>
+    </g>
+
+    <g class="node fade-up" style="animation-delay:0.55s"
+       data-title="Data Service (API)"
+       data-cat="Infrastructure"
+       data-desc="The open-data backbone. Serves grant, disbursement, allocation, and results data via a versioned REST API.">
+      <circle class="node-circle" cx="345" cy="525" r="36" fill="#0a2840"/>
+      <text x="345" y="520" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="Inter">Data</text>
+      <text x="345" y="536" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="Inter">Service</text>
+    </g>
+
+    <g class="node fade-up" style="animation-delay:0.58s"
+       data-title="Data Downloads"
+       data-cat="Infrastructure"
+       data-desc="Bulk CSV and Excel exports of all datasets. For analysts who need raw data outside the Explorer interface.">
+      <circle class="node-circle" cx="615" cy="525" r="36" fill="#0a2840"/>
+      <text x="615" y="520" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="Inter">Data</text>
+      <text x="615" y="536" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="Inter">Downloads</text>
+    </g>
+
+    <!-- ═══ MID RING ═══ -->
+    <g class="node fade-up" style="animation-delay:0.62s"
+       data-title="Corporate Website"
+       data-cat="Governance"
+       data-desc="The primary hub for global health advocacy, policies, news, replenishment campaigns, and the annual Results Report.">
+      <circle class="node-circle" cx="215" cy="435" r="34" fill="#013e77"/>
+      <text x="215" y="430" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="Inter">Corporate</text>
+      <text x="215" y="446" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="Inter">Website</text>
+    </g>
+
+    <g class="node fade-up" style="animation-delay:0.65s"
+       data-title="Results Report"
+       data-cat="Evidence"
+       data-desc="Annual flagship publication. Lives saved, infections averted, programme outcomes. Links back to Data Explorer for drill-down.">
+      <circle class="node-circle" cx="320" cy="405" r="32" fill="#013e77"/>
+      <text x="320" y="400" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="Inter">Results</text>
+      <text x="320" y="416" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="Inter">Report</text>
+    </g>
+
+    <g class="node fade-up" style="animation-delay:0.68s"
+       data-title="Digital Library"
+       data-cat="Governance"
+       data-desc="Centralised repository for photography, campaign video assets, brand content, and publication PDFs.">
+      <circle class="node-circle" cx="640" cy="405" r="32" fill="#013e77"/>
+      <text x="640" y="400" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="Inter">Digital</text>
+      <text x="640" y="416" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="Inter">Library</text>
+    </g>
+
+    <g class="node fade-up" style="animation-delay:0.71s"
+       data-title="Country Resources"
+       data-cat="Governance"
+       data-desc="Country-level policies, guidance documents, eligibility lists, and funding request templates for implementers.">
+      <circle class="node-circle" cx="745" cy="435" r="34" fill="#013e77"/>
+      <text x="745" y="430" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="Inter">Country</text>
+      <text x="745" y="446" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="Inter">Resources</text>
+    </g>
+
+    <!-- ═══ OUTER RING ═══ -->
+    <g class="node fade-up" style="animation-delay:0.75s"
+       data-title="Wambo.org"
+       data-cat="Procurement"
+       data-desc="Digital marketplace for health product procurement. Grant implementers order medicines, diagnostics, and commodities at negotiated prices.">
+      <circle class="node-circle" cx="150" cy="350" r="30" fill="#00b5ae"/>
+      <text x="150" y="354" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="Inter">Wambo</text>
+    </g>
+
+    <g class="node fade-up" style="animation-delay:0.78s"
+       data-title="Partner Portal"
+       data-cat="Governance"
+       data-desc="Secure portal for Principal Recipients and CCMs to manage grant entity data, submit funding requests, and track implementation.">
+      <circle class="node-circle" cx="275" cy="318" r="30" fill="#00b5ae"/>
+      <text x="275" y="314" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="Inter">Partner</text>
+      <text x="275" y="328" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="Inter">Portal</text>
+    </g>
+
+    <g class="node fade-up" style="animation-delay:0.81s"
+       data-title="Open Source (GitHub)"
+       data-cat="Infrastructure"
+       data-desc="Full codebase — client, server, middleware — open source. Maintained jointly by Zimmerman and The Global Fund.">
+      <circle class="node-circle" cx="480" cy="300" r="30" fill="#00b5ae"/>
+      <text x="480" y="296" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="Inter">Open</text>
+      <text x="480" y="310" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="Inter">Source</text>
+    </g>
+
+    <g class="node fade-up" style="animation-delay:0.84s"
+       data-title="Impact Products"
+       data-cat="Evidence"
+       data-desc="Impact evaluations, case studies, and evidence briefs supporting investment decisions and replenishment advocacy.">
+      <circle class="node-circle" cx="685" cy="318" r="30" fill="#00b5ae"/>
+      <text x="685" y="314" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="Inter">Impact</text>
+      <text x="685" y="328" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="Inter">Products</text>
+    </g>
+
+    <g class="node fade-up" style="animation-delay:0.87s"
+       data-title="Archive"
+       data-cat="Governance"
+       data-desc="Legacy publications, board documents, and superseded reports. Institutional memory and audit trails.">
+      <circle class="node-circle" cx="810" cy="345" r="30" fill="#00b5ae"/>
+      <text x="810" y="349" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="Inter">Archive</text>
+    </g>
+
+    <!-- ═══ BASE LINE END MARKERS ═══ -->
+    <g class="fade-up" style="animation-delay:0.95s">
+      <circle cx="72" cy="640" r="14" fill="#252c34"/>
+      <text x="72" y="644" font-size="9" font-weight="700" fill="#fff" text-anchor="middle" font-family="Inter">API</text>
+    </g>
+    <g class="fade-up" style="animation-delay:0.97s">
+      <circle cx="888" cy="640" r="14" fill="#252c34"/>
+      <text x="888" y="644" font-size="9" font-weight="700" fill="#fff" text-anchor="middle" font-family="Inter">WEB</text>
+    </g>
+  </svg>
+
+  <!-- Legend — directly under the SVG, no absolute positioning -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#0a2840"></div>Direct dependency</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#013e77"></div>Sibling platform</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#00b5ae"></div>Extended ecosystem</div>
+  </div>
+
+  <!-- Tooltip -->
+  <div class="eco-tooltip" id="tooltip">
+    <div class="eco-tooltip-cat" id="ttCat"></div>
+    <div class="eco-tooltip-title" id="ttTitle"></div>
+    <div class="eco-tooltip-body" id="ttBody"></div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const wrap = document.getElementById('ecoWrap');
+  const svg = document.getElementById('ecoSvg');
+  const tooltip = document.getElementById('tooltip');
+  const nodes = svg.querySelectorAll('.node');
+
+  function svgToPage(sx, sy) {
+    const pt = svg.createSVGPoint();
+    pt.x = sx; pt.y = sy;
+    const sp = pt.matrixTransform(svg.getScreenCTM());
+    const r = wrap.getBoundingClientRect();
+    return { x: sp.x - r.left, y: sp.y - r.top };
+  }
+
+  function show(node) {
+    document.getElementById('ttTitle').textContent = node.dataset.title;
+    document.getElementById('ttCat').textContent = node.dataset.cat;
+    document.getElementById('ttBody').textContent = node.dataset.desc;
+
+    const circle = node.querySelector('circle.node-circle');
+    let cx, cy, nr;
+    if (circle) {
+      cx = parseFloat(circle.getAttribute('cx'));
+      cy = parseFloat(circle.getAttribute('cy'));
+      nr = parseFloat(circle.getAttribute('r'));
+    } else {
+      cx = parseFloat(node.dataset.cx || 480);
+      cy = parseFloat(node.dataset.cy || 640);
+      nr = parseFloat(node.dataset.r || 55);
+      cy = cy - nr;
+    }
+
+    const pos = svgToPage(cx, cy - nr - 10);
+    const ttW = tooltip.offsetWidth;
+    const wrapW = wrap.offsetWidth;
+
+    let left = pos.x - ttW / 2;
+    if (left < 8) left = 8;
+    if (left + ttW > wrapW - 8) left = wrapW - ttW - 8;
+
+    let top = pos.y - tooltip.offsetHeight - 6;
+    if (top < 4) {
+      const pb = svgToPage(cx, cy + nr + 10);
+      top = pb.y + 6;
+    }
+
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+    tooltip.classList.add('visible');
+  }
+
+  function hide() { tooltip.classList.remove('visible'); }
+
+  nodes.forEach(n => {
+    n.addEventListener('mouseenter', () => show(n));
+    n.addEventListener('mouseleave', hide);
+    n.addEventListener('touchstart', (e) => { e.preventDefault(); hide(); setTimeout(() => show(n), 10); }, { passive: false });
+  });
+
+  wrap.addEventListener('mouseleave', hide);
+  document.addEventListener('touchstart', (e) => { if (!wrap.contains(e.target)) hide(); });
+})();
+</script>
+</body>
+</html>
