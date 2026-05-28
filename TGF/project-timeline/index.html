@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    background: transparent;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .timeline-wrap {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 16px;
+    position: relative;
+  }
+
+  .timeline-wrap svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Dot entrance */
+  .dot-group {
+    opacity: 0;
+    animation: dotIn 0.4s cubic-bezier(0.2, 0, 0, 1) forwards;
+  }
+  @keyframes dotIn { to { opacity: 1; } }
+
+  /* Line draw */
+  .timeline-line {
+    stroke-dasharray: 2000;
+    stroke-dashoffset: 2000;
+    animation: drawLine 1.2s cubic-bezier(0.2, 0, 0, 1) 0.1s forwards;
+  }
+  @keyframes drawLine { to { stroke-dashoffset: 0; } }
+
+  /* Tooltip */
+  .tl-tooltip {
+    position: absolute;
+    background: #252c34;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    padding: 10px 14px;
+    border-radius: 6px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.2s, transform 0.2s;
+    z-index: 20;
+    max-width: 220px;
+    box-shadow: 0 4px 16px rgba(37,44,52,0.15);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .tl-tooltip.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .tl-tooltip-year {
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 2px;
+  }
+  .tl-tooltip-body {
+    color: #cfd4da;
+  }
+
+  /* Hover on dots */
+  .dot-hit {
+    cursor: pointer;
+    fill: transparent;
+  }
+  .dot-hit:hover + .dot-vis {
+    r: 7;
+  }
+  .dot-vis {
+    pointer-events: none;
+    transition: r 0.15s;
+  }
+
+  /* "You are here" pulse */
+  .now-pulse {
+    animation: nowPulse 2s ease-in-out infinite;
+  }
+  @keyframes nowPulse {
+    0%, 100% { opacity: 0.2; r: 12; }
+    50% { opacity: 0; r: 18; }
+  }
+
+  /* Personal milestone highlight */
+  .personal-dot {
+    fill: #013e77;
+  }
+</style>
+</head>
+<body>
+
+<div class="timeline-wrap" id="tlWrap">
+  <!--
+    viewBox 900 wide × 160 tall
+    Timeline line at y=80
+    Dots at y=80
+    Labels above (year) and below (description)
+    7 milestones spread across x: 60, 200, 340, 460, 580, 700, 840
+  -->
+  <svg id="tlSvg" viewBox="0 0 900 160" preserveAspectRatio="xMidYMid meet">
+
+    <!-- Main line -->
+    <line class="timeline-line" x1="40" y1="80" x2="860" y2="80" stroke="#cfd4da" stroke-width="2"/>
+
+    <!-- ═══ 2017 — Project inception ═══ -->
+    <g class="dot-group" style="animation-delay:0.3s">
+      <circle class="dot-hit" cx="60" cy="80" r="16" data-year="2017" data-desc="The Data Explorer project begins at Zimmerman for The Global Fund."/>
+      <circle class="dot-vis" cx="60" cy="80" r="5" fill="#0a2840"/>
+      <text x="60" y="62" font-size="13" font-weight="700" fill="#252c34" text-anchor="middle" font-family="Inter">2017</text>
+      <text x="60" y="104" font-size="11" fill="#495057" text-anchor="middle" font-family="Inter">Project inception</text>
+    </g>
+
+    <!-- ═══ 2019 — V1 launch ═══ -->
+    <g class="dot-group" style="animation-delay:0.45s">
+      <circle class="dot-hit" cx="200" cy="80" r="16" data-year="2019" data-desc="First public version of the Data Explorer goes live."/>
+      <circle class="dot-vis" cx="200" cy="80" r="5" fill="#0a2840"/>
+      <text x="200" y="62" font-size="13" font-weight="700" fill="#252c34" text-anchor="middle" font-family="Inter">2019</text>
+      <text x="200" y="104" font-size="11" fill="#495057" text-anchor="middle" font-family="Inter">V1 launch</text>
+    </g>
+
+    <!-- ═══ 2020 — Performance frameworks ═══ -->
+    <g class="dot-group" style="animation-delay:0.55s">
+      <circle class="dot-hit" cx="340" cy="80" r="16" data-year="2020" data-desc="Performance frameworks, chart export features, and expanded data dimensions added."/>
+      <circle class="dot-vis" cx="340" cy="80" r="5" fill="#0a2840"/>
+      <text x="340" y="62" font-size="13" font-weight="700" fill="#252c34" text-anchor="middle" font-family="Inter">2020</text>
+      <text x="340" y="104" font-size="11" fill="#495057" text-anchor="middle" font-family="Inter">Frameworks &amp; export</text>
+    </g>
+
+    <!-- ═══ 2021 — Major upgrade ═══ -->
+    <g class="dot-group" style="animation-delay:0.65s">
+      <circle class="dot-hit" cx="460" cy="80" r="16" data-year="2021" data-desc="Major platform upgrade — redesigned navigation, new data dimensions, improved accessibility."/>
+      <circle class="dot-vis" cx="460" cy="80" r="5" fill="#0a2840"/>
+      <text x="460" y="62" font-size="13" font-weight="700" fill="#252c34" text-anchor="middle" font-family="Inter">2021</text>
+      <text x="460" y="104" font-size="11" fill="#495057" text-anchor="middle" font-family="Inter">Major upgrade</text>
+    </g>
+
+    <!-- ═══ 2023 — Aylin joins ═══ -->
+    <g class="dot-group" style="animation-delay:0.75s">
+      <circle class="dot-hit" cx="580" cy="80" r="16" data-year="2023" data-desc="I join Zimmerman as UX/UI Designer and take ownership of the Data Explorer's design process."/>
+      <circle class="dot-vis personal-dot" cx="580" cy="80" r="6" />
+      <text x="580" y="62" font-size="13" font-weight="700" fill="#013e77" text-anchor="middle" font-family="Inter">2023</text>
+      <text x="580" y="104" font-size="11" fill="#013e77" text-anchor="middle" font-family="Inter" font-weight="500">I join as designer</text>
+    </g>
+
+    <!-- ═══ 2024 — Lead ═══ -->
+    <g class="dot-group" style="animation-delay:0.85s">
+      <circle class="dot-hit" cx="700" cy="80" r="16" data-year="Sept 2024" data-desc="Promoted to Lead UX/UI Designer. Full design ownership across the Data Explorer and related platforms."/>
+      <circle class="dot-vis personal-dot" cx="700" cy="80" r="6"/>
+      <text x="700" y="62" font-size="13" font-weight="700" fill="#013e77" text-anchor="middle" font-family="Inter">2024</text>
+      <text x="700" y="104" font-size="11" fill="#013e77" text-anchor="middle" font-family="Inter" font-weight="500">Lead designer</text>
+    </g>
+
+    <!-- ═══ Present — Ongoing ═══ -->
+    <g class="dot-group" style="animation-delay:0.95s">
+      <circle class="now-pulse" cx="840" cy="80" r="12" fill="#00b5ae"/>
+      <circle class="dot-hit" cx="840" cy="80" r="16" data-year="Present" data-desc="Ongoing iteration — continuous design work on new features, data dimensions, and design system maintenance."/>
+      <circle class="dot-vis" cx="840" cy="80" r="5" fill="#00b5ae"/>
+      <text x="840" y="62" font-size="13" font-weight="700" fill="#00b5ae" text-anchor="middle" font-family="Inter">Now</text>
+      <text x="840" y="104" font-size="11" fill="#00b5ae" text-anchor="middle" font-family="Inter">Ongoing</text>
+    </g>
+
+    <!-- Arrow at the end of the line -->
+    <polygon points="858,76 868,80 858,84" fill="#cfd4da" class="dot-group" style="animation-delay:1s"/>
+  </svg>
+
+  <!-- Tooltip -->
+  <div class="tl-tooltip" id="tooltip">
+    <div class="tl-tooltip-year" id="ttYear"></div>
+    <div class="tl-tooltip-body" id="ttBody"></div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const wrap = document.getElementById('tlWrap');
+  const svg = document.getElementById('tlSvg');
+  const tooltip = document.getElementById('tooltip');
+  const dots = svg.querySelectorAll('.dot-hit');
+
+  function svgToPage(sx, sy) {
+    const pt = svg.createSVGPoint();
+    pt.x = sx; pt.y = sy;
+    const sp = pt.matrixTransform(svg.getScreenCTM());
+    const r = wrap.getBoundingClientRect();
+    return { x: sp.x - r.left, y: sp.y - r.top };
+  }
+
+  function show(dot) {
+    document.getElementById('ttYear').textContent = dot.dataset.year;
+    document.getElementById('ttBody').textContent = dot.dataset.desc;
+
+    const cx = parseFloat(dot.getAttribute('cx'));
+    const pos = svgToPage(cx, 80);
+    const ttW = tooltip.offsetWidth;
+    const wrapW = wrap.offsetWidth;
+
+    let left = pos.x - ttW / 2;
+    if (left < 8) left = 8;
+    if (left + ttW > wrapW - 8) left = wrapW - ttW - 8;
+
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = (pos.y - tooltip.offsetHeight - 16) + 'px';
+    tooltip.classList.add('visible');
+  }
+
+  function hide() {
+    tooltip.classList.remove('visible');
+  }
+
+  dots.forEach(d => {
+    d.addEventListener('mouseenter', () => show(d));
+    d.addEventListener('mouseleave', hide);
+    d.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      hide();
+      setTimeout(() => show(d), 10);
+    }, { passive: false });
+  });
+
+  wrap.addEventListener('mouseleave', hide);
+  document.addEventListener('touchstart', (e) => {
+    if (!wrap.contains(e.target)) hide();
+  });
+})();
+</script>
+</body>
+</html>
